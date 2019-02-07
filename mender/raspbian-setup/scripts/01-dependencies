@@ -1,0 +1,11 @@
+#! /bin/bash
+cd $files
+
+set -ex
+
+apt-get update
+
+# remove deps
+cat deps_remove.txt | xargs apt-get remove --purge -y
+# add deps
+cat deps_add.txt | xargs apt-get install -y --no-install-recommends

@@ -1,0 +1,9 @@
+#! /bin/bash
+cd $files
+
+set -ex
+
+cp timesyncd.conf /etc/systemd/
+
+# Final timezone setting will be done after the image is deployed on a device
+ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime

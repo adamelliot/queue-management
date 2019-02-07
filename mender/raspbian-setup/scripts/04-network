@@ -1,0 +1,31 @@
+#! /bin/bash
+
+cd $files
+
+set -ex
+
+echo "$hostname" > /etc/hostname
+sed -i "s/raspberrypi/$hostname/g" /etc/hosts
+
+systemctl enable systemd-networkd
+
+mkdir -p /etc/systemd/network/
+mkdir -p /etc/wpa_supplicant/
+
+# Remove old way of configuring network
+if [ -f /etc/network/interfaces ]; then
+	rm /etc/network/interfaces
+fi
+
+cp network/01-wired.network /etc/systemd/network/
+cp network/02-wireless.network /etc/systemd/network/
+
+cp network/wpa_supplicant.conf /etc/wpa_supplicant/
+cp network/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/
+
+systemctl enable wpa_supplicant@wlan0
+
+cp network-watchdog.sh /root/
+cp network-watchdog.service  /etc/systemd/system/
+
+systemctl enable network-watchdog

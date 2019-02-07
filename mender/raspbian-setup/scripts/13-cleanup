@@ -1,0 +1,19 @@
+#! /bin/bash
+
+cd $files
+
+set -ex
+
+apt-get clean
+
+rm -rf /var/log/*
+rm -rf /var/cache/man/*
+rm -rf /var/lib/apt/lists/*
+
+mkdir -p /var/log/nginx
+mkdir -p /var/log/supervisor
+
+if id -u pi > /dev/null 2>&1; then
+	deluser --force pi
+	rm -rf /home/pi
+fi

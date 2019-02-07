@@ -1,0 +1,23 @@
+#! /bin/bash
+
+mount / -o remount,rw
+
+# Get Ethernet mac address
+IFACE=e*
+read LOCALMAC </sys/class/net/$IFACE/address
+
+# Set address correctly based on MAC Address
+while read mac tzpi url remainder
+do
+    if [[ $LOCALMAC == $mac ]]; then
+        TZPI=$tzpi;
+    fi
+done < /root/sites.txt
+
+# Final timezone setting will be done after the image is deployed on a device
+ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
+
+# We need to start ssh once before we go RO, otherwise it has problems
+ssh-keygen -A
+
+mount / -o remount,ro

@@ -1,0 +1,31 @@
+#! /bin/bash
+cd $files
+
+set -ex
+
+dphys-swapfile swapoff
+dphys-swapfile uninstall 
+systemctl disable dphys-swapfile
+
+if [ -f /var/swap ] ; then
+	rm /var/swap
+fi
+
+if [ ! -e /var.overlay ] ; then
+	mkdir /var.overlay
+	mv /var /var.base
+	mkdir /var
+fi
+
+if [ ! -e /var.overlay ] ; then
+	mkdir /home.overlay
+	mv /home /home.base
+	mkdir /home
+fi
+
+cp mount_overlay /usr/local/bin
+cp fstab /etc/fstab
+
+if [ -e /root/setup-scripts ] ; then
+	rm -rf /root/setup-scripts
+fi

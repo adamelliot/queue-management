@@ -1,0 +1,27 @@
+#! /bin/bash
+cd $files
+
+set -ex
+
+cp launch-browser.sh $home_dir/
+cp sites.txt /root/
+
+# Updates auto-login for X11 to point to tty2
+envsubst '${username}' < autologin@.service > /etc/systemd/system/autologin@.service
+
+mkdir -p $home_dir/.config/luakit
+cp window.lua $home_dir/.config/luakit/
+
+chown $username:$username $home_dir/launch-browser.sh \
+	$home_dir/.config/luakit $home_dir/.config/luakit/window.lua
+
+systemctl set-default graphical.target
+gpasswd -a $username tty
+
+# https://raspberrypi.stackexchange.com/questions/47823/how-to-prevent-autologin-of-gui
+mkdir -p /etc/systemd/system/getty.target.wants
+ln -fs /etc/systemd/system/autologin@.service /etc/systemd/system/getty.target.wants/getty@tty2.service
+
+# NOTE: LuaKit needs to be installed after other packages to 
+# make sure things are hooked up in the right order.
+apt-get install -y luakit
