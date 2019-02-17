@@ -15,7 +15,7 @@ export hostname=mended
 # Net health timeouts
 # Pull sites.txt / wpa_supplicant from env path
 
-export files=`pwd`/files
+export files=$DIR/files
 export home_dir="/home/${username}"
 
 for f in $DIR/scripts/*; do

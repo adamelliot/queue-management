@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 set -e
 
 DOCKER_IMAGE_NAME=bcgov/digital-signage-artifact-builder
@@ -7,11 +9,11 @@ OUTPUT_DIR="$(pwd)/output"
 
 show_usage() {
   echo "Usage:"
-  echo "$0 <rootfs input file> <output Artifact name> <setup-folder>"
+  echo "$0 <rootfs input file> <output Artifact name>"
 }
 
-if [ "$#" -ne 3 ]; then
-  echo "ERROR: 3 parameters required."
+if [ "$#" -ne 2 ]; then
+  echo "ERROR: 2 parameters required."
   show_usage
   exit 1
 fi
@@ -19,7 +21,7 @@ fi
 ROOTFS_INPUT_FILE=$1
 ARTIFACT_NAME=$2
 DEVICE_TYPE="raspberrypi3"
-SETUP_SCRIPTS=$3
+SETUP_SCRIPTS=$DIR/raspbian-setup
 
 if [ ! -f "$ROOTFS_INPUT_FILE" ]; then
   echo "ERROR: File passed as first argument is not accessible."
@@ -44,7 +46,6 @@ docker run \
        --mount type=bind,source=$OUTPUT_DIR,target=/root_images \
        --mount type=bind,source=$SETUP_SCRIPTS,target=/setup-scripts \
        $DOCKER_IMAGE_NAME $ROOTFS_OUTPUT_FILE_NAME $ARTIFACT_NAME $DEVICE_TYPE
-
 
 # Output Artifact gets root owner and group, change to current logged in
 CURRENT_USER=$(id -u -n)

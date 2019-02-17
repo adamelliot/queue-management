@@ -18,7 +18,8 @@ done < /data/sites.txt
 echo "${URL}?tz=${TZPI}&localvideo=1" > /var/smartboard-url
 
 NETWORK_DOWN=0
-RETRIES=18
+# 15 Minutes
+RETRIES=180
 TIMEOUT=5
 
 while true ; do

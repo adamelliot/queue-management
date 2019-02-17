@@ -45,7 +45,7 @@ To generate the menderized image you will need to provide some information to th
  	--mender-client "/mender" \
  	--artifact-name "2018-11-13-raspbian-stretch-lite" \
  	--bootloader-toolchain "arm-linux-gnueabihf" \
- 	--server-cert "/mender-convert/server.crt" \
+ 	--server-cert "input/server.crt" \
  	--server-url "https://mender.pathfinder.gov.bc.ca" \
  	--storage-total-size-mb "3000" \
  	--data-part-size-mb "1000"
@@ -68,3 +68,15 @@ Building for Demo server:
 
 ### Step 3: Creating Artifacts
 
+One you've prepared a Menderized Image you can reuse that image for creating artifacts. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
+
+Creating an artifact takes 2 parameters:
+1. Menderized Image (the `menderized-image.ext4`)
+2. Name of output artifact ('digital-signage-v1')
+
+Then you can run:
+```
+./build-artifact \
+    /Users/adam/Dropbox/Code/bcgov/mender-convert-output/digital-signage-base-image.ext4 \
+    digital-signage-beta-9
+```

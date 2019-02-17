@@ -4,7 +4,8 @@ cd $files
 
 set -ex
 
-apt-get clean --purge
+apt-get -y --purge autoremove
+apt-get clean
 
 rm -rf /var/log/*
 rm -rf /var/cache/man/*
