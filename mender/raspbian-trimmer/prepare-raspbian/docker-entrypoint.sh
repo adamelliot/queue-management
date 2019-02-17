@@ -1,4 +1,9 @@
 #!/bin/sh
+# 
+# This tool is a modified version of Steven Bjornson's LinuxFSMount:
+# https://github.com/sabjorn/LinuxFSMount/
+#
+
 set -e
 
 IMG_NAME=/image/$1
