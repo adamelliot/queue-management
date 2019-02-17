@@ -1,0 +1,36 @@
+#!/bin/sh
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+set -e
+
+DOCKER_IMAGE_NAME=bcgov/digital-signage-prepare-raspbian
+
+show_usage() {
+  echo "Usage:"
+  echo "$0 raspbian-image-to-prepare.img"
+}
+
+if [ "$#" -ne 1 ]; then
+  echo "ERROR: 1 parameter required."
+  show_usage
+  exit 1
+fi
+
+INPUT_IMAGE=$1
+
+if [ ! -f "$INPUT_IMAGE" ]; then
+  echo "ERROR: File passed as input is not accessible."
+  show_usage
+  exit 1
+fi
+
+VOLUME=$(dirname $(realpath $1))
+IMAGE_NAME=$(basename $1)
+
+docker run \
+       -ti \
+       --privileged=true \
+       --mount type=bind,source=$DIR/scripts,target=/scripts \
+       --mount type=bind,source=$VOLUME,target=/image \
+       $DOCKER_IMAGE_NAME $IMAGE_NAME

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+set -e
+
+DOCKER_IMAGE_NAME=bcgov/digital-signage-prepare-raspbian
+
+docker build $DIR -t ${DOCKER_IMAGE_NAME}
+
