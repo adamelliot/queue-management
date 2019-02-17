@@ -25,7 +25,7 @@ echo "Entering emulated shell in device image. All commands are run as the root 
 echo "Make changes (e.g. apt update, apt upgrade, wget ...) and press Ctrl-D when done."
 
 # Using bash for command completion support and other conveniences
-chroot /root_system /bin/bash -c "cd /root/setup-scripts ; bash"
+chroot /root_system /bin/bash -c "/root/setup-scripts/setup.sh"
 
 # Mender Artifact name must also be present inside
 echo artifact_name=$ARTIFACT_NAME > /root_system/etc/mender/artifact_info
@@ -33,6 +33,8 @@ echo artifact_name=$ARTIFACT_NAME > /root_system/etc/mender/artifact_info
 if [ "$QEMU_STATIC_COPIED" = true ]; then
   rm /root_system/usr/bin/qemu-arm-static
 fi
+
+rm -rf /root_system/root/setup-scripts/
 
 umount /root_system
 

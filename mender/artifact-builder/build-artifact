@@ -2,7 +2,7 @@
 
 set -e
 
-DOCKER_IMAGE_NAME=digital-signage-artifact-builder
+DOCKER_IMAGE_NAME=bcgov/digital-signage-artifact-builder
 OUTPUT_DIR="$(pwd)/output"
 
 show_usage() {

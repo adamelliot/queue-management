@@ -2,6 +2,6 @@
 
 set -e
 
-DOCKER_IMAGE_NAME=digital-signage-artifact-builder
+DOCKER_IMAGE_NAME=bcgov/digital-signage-artifact-builder
 
 docker build . -t ${DOCKER_IMAGE_NAME}
