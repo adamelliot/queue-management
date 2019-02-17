@@ -4,7 +4,7 @@ cd $files
 
 set -ex
 
-apt-get clean
+apt-get clean --purge
 
 rm -rf /var/log/*
 rm -rf /var/cache/man/*

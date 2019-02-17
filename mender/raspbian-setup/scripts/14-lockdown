@@ -25,7 +25,3 @@ fi
 
 cp mount_overlay /usr/local/bin
 cp fstab /etc/fstab
-
-if [ -e /root/setup-scripts ] ; then
-	rm -rf /root/setup-scripts
-fi

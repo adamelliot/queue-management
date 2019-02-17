@@ -12,7 +12,7 @@ do
     if [[ $LOCALMAC == $mac ]]; then
         TZPI=$tzpi;
     fi
-done < /root/sites.txt
+done < /data/sites.txt
 
 # Final timezone setting will be done after the image is deployed on a device
 ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime

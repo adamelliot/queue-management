@@ -11,7 +11,7 @@ do
 	        TZPI=$tzpi;
             URL=$url;
     fi
-done < /root/sites.txt
+done < /data/sites.txt
 
 # Leave the test URL with it's zone in the config so the 
 # application knows what to load

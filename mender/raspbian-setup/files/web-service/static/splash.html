@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Queue Management</title>
+
+    <style>
+        html {
+            background: url(splash.png) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            background-size: cover;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        #loading {
+            position: absolute;
+            bottom: 50px;
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin: -14px;
+            border: 7px solid rgba(8,75,136,.3);
+            border-radius: 50%;
+        }
+
+        #loading div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            border: 7px solid rgb(8,75,136);
+            border-radius: 50%;
+            border-color: rgb(8,75,136) transparent transparent transparent;
+            width: 64px;
+            height: 64px;
+            margin: -7px;
+            
+            -webkit-animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        #loading div:nth-child(1) {
+            -webkit-animation-delay: -0.23s;
+        }
+        #loading div:nth-child(2) {
+            -webkit-animation-delay: -0.2s;
+        }
+        #loading div:nth-child(3) {
+            -webkit-animation-delay: -0.15s;
+        }
+        #loading div:nth-child(4) {
+            -webkit-animation-delay: -0.08s;
+        }
+
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }        
+
+    </style>
+    
+    <script src="/axios.min.js"></script>
+    <script>
+        window.onload = function() {
+            var fetchNetworkStatus = function () {
+                axios
+                .get('http://localhost/health')
+                .then(function(response) {
+                    if (response.data.connected)
+                    {
+                        document.getElementById('loading').remove();
+                        location.href = response.data.url;
+                    }
+                    else
+                    {
+                        setTimeout(fetchNetworkStatus, 1000);
+                    }
+                })
+                .catch(function(error) {
+                    setTimeout(fetchNetworkStatus, 1000);
+                });
+            }
+            fetchNetworkStatus();
+        }
+    </script>
+
+</head>
+<body>
+    <div id="loading"><div></div><div></div><div></div><div></div><div></div></div>
+</body>
+</html>
