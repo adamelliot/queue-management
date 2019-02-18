@@ -25,7 +25,9 @@ cp network/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/
 
 systemctl enable wpa_supplicant@wlan0
 
-cp network-watchdog.sh /root/
+envsubst '${network_reboot_timeout}' < network-watchdog.sh > /root/network-watchdog.sh
+chmod +x /root/network-watchdog.sh
+
 cp network-watchdog.service  /etc/systemd/system/
 
 systemctl enable network-watchdog

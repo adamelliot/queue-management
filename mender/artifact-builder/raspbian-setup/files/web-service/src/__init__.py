@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -10,7 +10,8 @@ def get_health():
         url = file.read().strip()
 
     response = jsonify({
-        'connected': not os.path.exists("/var/network-down"),
+        'connected': not Path("/var/network-down").is_file(),
+        'videoCached': Path("/data/videos/video.mp4").is_file()
         'url': url
     })
 

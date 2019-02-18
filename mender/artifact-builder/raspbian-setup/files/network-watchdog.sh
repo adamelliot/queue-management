@@ -1,29 +1,15 @@
 #! /bin/bash
 
-# Get Ethernet mac address
-IFACE=e*
-read LOCALMAC </sys/class/net/$IFACE/address
-
-# Set address correctly based on MAC Address
-while read mac tzpi url remainder
-do
-    if [[ $LOCALMAC == $mac ]]; then
-	        TZPI=$tzpi;
-            URL=$url;
-    fi
-done < /data/sites.txt
-
-# Leave the test URL with it's zone in the config so the 
-# application knows what to load
-echo "${URL}?tz=${TZPI}&localvideo=1" > /var/smartboard-url
+/root/load-smartboard-data.sh
 
 NETWORK_DOWN=0
-# 15 Minutes
-RETRIES=180
 TIMEOUT=5
 
+# How many times to retry before a reboot
+RETRIES=$((${network_reboot_timeout} / $TIMEOUT))
+
 while true ; do
-	wget -q -O /dev/null "$URL"
+	wget -q -O /dev/null "`cat /var/smartboard/url`"
 	if [ $? -gt 0 ] ; then
 		NETWORK_DOWN=$((NETWORK_DOWN + 1))
 		echo "Network down, attempt number: ${NETWORK_DOWN}"

@@ -27,6 +27,7 @@ python3-venv
 fim
 fuse
 xloadimage
+jq
 luakit
 Packages
 

@@ -4,9 +4,13 @@ cd $files
 set -ex
 
 apt-get update
-apt-get upgrade
+apt-get upgrade -y
 
 # remove deps
 apt-get remove --purge -y $(cat deps_remove.txt | tr '\n' ' ')
 # add deps
 apt-get install -y --no-install-recommends $(cat deps_add.txt | tr '\n' ' ')
+
+# Copy our smartboard data generator
+envsubst '${smartboard_base_url}' < load-smartboard-data.sh > /root/load-smartboard-data.sh
+chmod +x /root/load-smartboard-data.sh

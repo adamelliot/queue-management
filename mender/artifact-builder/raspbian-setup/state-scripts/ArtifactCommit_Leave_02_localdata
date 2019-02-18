@@ -6,6 +6,10 @@ mount / -o remount,rw
 IFACE=e*
 read LOCALMAC </sys/class/net/$IFACE/address
 
+# Move the sites.txt to data so it can be modified if needed
+# just by mounting that drive
+cp /root/sites.txt /data/sites.txt
+
 # Set address correctly based on MAC Address
 while read mac tzpi url remainder
 do
@@ -19,5 +23,8 @@ ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
 
 # We need to start ssh once before we go RO, otherwise it has problems
 ssh-keygen -A
+
+mkdir -p /data/videos
+ln -s /data/videos /var/flaskapp/static/videos
 
 mount / -o remount,ro

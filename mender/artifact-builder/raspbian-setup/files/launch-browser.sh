@@ -14,6 +14,9 @@ unclutter &
 # run window manager
 matchbox-window-manager -use_cursor no -use_titlebar no  &
 
+# Sleep for a few seconds to make sure everything is up and running
+sleep 3
+
 # Start up browser, and keep it alive if it crashes / terminates for some reason.
 while true ; do
 	# Launch a splash screen first and let the webservice tell us when it's safe
