@@ -13,7 +13,7 @@ First download the raspbian image from: [Raspberry Pi Images](https://www.raspbe
 
 To shrink and prime the image run:
 ```
-raspbian-trimmer/generate-image.sh 2018-11-13-raspbian-stretch-lite.img
+raspbian-shrinker/generate-image.sh 2018-11-13-raspbian-stretch-lite.img
 ```
 
 ## Step 2: Menderizing the image
@@ -28,24 +28,23 @@ git checkout 2743366
 ./docker-build
 ```
 
-To generate the menderized image you will need to provide some information to the conversion tool:
+To generate the **Menderized** image you will need to provide some information to the conversion tool:
 
 1. Base Image (Built in **Step #1**)
 2. URL Which will be Hosting Mender [https://mender.pathfinder.gov.bc.ca]
-3. The service certificate the devices need to register with (all have the same cert)
+3. The service certificate the devices need to register with (use `server.crt` in this folder)
 4. The total store needs to be more than double the size of the source image
 
 **WARNING:** With the input image you need to have it in the same folder as the convert tool, or a subfolder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
 
 ```
 ./docker-mender-convert from-raw-disk-image \
- 	--raw-disk-image "input/2018-11-13-raspbian-stretch-lite.img" \
- 	--mender-disk-image "digital-signage-base-image.sdimg" \
+ 	--raw-disk-image "input/raspbian-lite-shrunk.img" \
+    --artifact-name "digital-signage" \
  	--device-type "raspberrypi3" \
  	--mender-client "/mender" \
- 	--artifact-name "2018-11-13-raspbian-stretch-lite" \
  	--bootloader-toolchain "arm-linux-gnueabihf" \
- 	--server-cert "input/server.crt" \
+ 	--server-cert "server.crt" \
  	--server-url "https://mender.pathfinder.gov.bc.ca" \
  	--storage-total-size-mb "3000" \
  	--data-part-size-mb "1000"
@@ -54,11 +53,10 @@ To generate the menderized image you will need to provide some information to th
 Building for Demo server:
 ```
 ./docker-mender-convert from-raw-disk-image \
- 	--raw-disk-image "input/2018-11-13-raspbian-stretch-lite.img" \
- 	--mender-disk-image "digital-signage-base-image.sdimg" \
+    --raw-disk-image "input/raspbian-lite-shrunk.img" \
+    --artifact-name "digital-signage" \
  	--device-type "raspberrypi3" \
  	--mender-client "/mender" \
- 	--artifact-name "2018-11-13-raspbian-stretch-lite" \
  	--bootloader-toolchain "arm-linux-gnueabihf" \
  	--demo-host-ip 10.0.0.5 \
  	--demo \

@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 function cleanup() {
   if losetup $loopback &>/dev/null; then
