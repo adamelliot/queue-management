@@ -1,0 +1,4 @@
+output/*
+config.env
+sites.txt
+wpa_supplicant.conf

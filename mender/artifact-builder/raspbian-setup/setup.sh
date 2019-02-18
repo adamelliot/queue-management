@@ -6,14 +6,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 set -ex
 
-# TODO: Discuss how we want to set user variables
-export username='bcservices'
-export password='password'
-export sshd_port=22022
-export hostname=mended
+if [ ! -f $DIR/config.env ] ; then
+	echo "ERROR: No config.env provided"
+	exit -1
+fi
 
-# Net health timeouts
-# Pull sites.txt / wpa_supplicant from env path
+set -a
+source $DIR/config.env
+set +a
 
 export files=$DIR/files
 export home_dir="/home/${username}"

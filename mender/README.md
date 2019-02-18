@@ -66,17 +66,23 @@ Building for Demo server:
  	--data-part-size-mb "1000"
 ```
 
-### Step 3: Creating Artifacts
+## Step 3: Creating Artifacts
 
 One you've prepared a Menderized Image you can reuse that image for creating artifacts. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
 
-Creating an artifact takes 2 parameters:
+Creating an artifact takes 3 parameters:
 1. Menderized Image (the `menderized-image.ext4`)
 2. Name of output artifact ('digital-signage-v1')
+3. Config.env file that contains all the configuration options. See `config.example.env` to see what this files should contain
 
 Then you can run:
 ```
-./build-artifact \
+# Run this the first time to make sure the container is built
+artifact-builder/docker-build
+
+# Build the artifact from the base image
+artifact-builder/build-artifact \
     /Users/adam/Dropbox/Code/bcgov/mender-convert-output/digital-signage-base-image.ext4 \
-    digital-signage-beta-9
+    digital-signage-beta-9 \
+    config.example.env
 ```
