@@ -4,8 +4,9 @@ cd $files
 set -ex
 
 apt-get update
+apt-get upgrade
 
 # remove deps
-cat deps_remove.txt | xargs apt-get remove --purge -y
+apt-get remove --purge -y $(cat deps_remove.txt | tr '\n' ' ')
 # add deps
-cat deps_add.txt | xargs apt-get install -y --no-install-recommends
+apt-get install -y --no-install-recommends $(cat deps_add.txt | tr '\n' ' ')
