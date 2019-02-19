@@ -1,9 +1,6 @@
 #! /bin/bash
 cd $files
 
-# TODO: Enable this file
-exit 0
-
 set -ex
 
 dphys-swapfile swapoff

@@ -1,9 +1,6 @@
 #! /bin/bash
 cd $files
 
-# TODO: Enable this file
-exit 0
-
 set -ex
 
 echo "${username} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/011_${username}-nopasswd 
