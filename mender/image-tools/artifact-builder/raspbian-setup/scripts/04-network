@@ -20,7 +20,7 @@ fi
 cp network/01-wired.network /etc/systemd/network/
 cp network/02-wireless.network /etc/systemd/network/
 
-cp network/wpa_supplicant.conf /etc/wpa_supplicant/
+cp network/wpa_supplicant-country.conf /etc/wpa_supplicant/wpa_supplicant.conf
 cp network/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/
 
 systemctl enable wpa_supplicant@wlan0
