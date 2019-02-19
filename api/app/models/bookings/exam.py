@@ -25,7 +25,7 @@ class Exam(Base):
     event_id = db.Column(db.String(25), nullable=False)
     exam_name = db.Column(db.String(50), nullable=False)
     examinee_name = db.Column(db.String(50), nullable=True)
-    expiry_date = db.Column(db.DateTime, nullable=False)
+    expiry_date = db.Column(db.DateTime, nullable=True)
     notes = db.Column(db.String(400), nullable=True)
     exam_received = db.Column(db.Integer, nullable=False)
     exam_received_date = db.Column(db.DateTime, nullable=True)
@@ -35,6 +35,8 @@ class Exam(Base):
     deleted_date = db.Column(db.String(50), nullable=True)
     exam_returned_ind = db.Column(db.Integer, nullable=False, default=0)
     exam_returned_tracking_number = db.Column(db.String(50), nullable=True)
+    offsite_location = db.Column(db.String(50), nullable=True)
+
 
     booking = db.relationship("Booking")
     exam_type = db.relationship("ExamType")

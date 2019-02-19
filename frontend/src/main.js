@@ -24,20 +24,26 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import './assets/css/q.css'
 import './assets/css/bc-gov-style.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { InputNumber } from 'element-ui'
 import {
-  faPlus,
-  faMinus,
+  faRegistered
+} from '@fortawesome/free-regular-svg-icons'
+import {
+  faClock,
   faAngleLeft,
   faAngleRight,
   faBars,
   faBinoculars,
   faCalendar,
+  faCaretDown,
   faCaretLeft,
   faCaretRight,
   faCheck,
+  faCheckSquare,
   faExclamation,
+  faExclamationTriangle,
   faFilter,
+  faMinus,
+  faPlus,
   faSort,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -45,29 +51,34 @@ import VDragged from 'v-dragged'
 
 Vue.use(VDragged)
 library.add(
-  faPlus,
-  faMinus,
+  faClock,
   faAngleLeft,
   faAngleRight,
   faBars,
   faBinoculars,
+  faRegistered,
   faCalendar,
   faCaretLeft,
   faCaretRight,
+  faCaretDown,
   faCheck,
+  faCheckSquare,
   faExclamation,
+  faExclamationTriangle,
   faFilter,
+  faMinus,
+  faPlus,
   faSort,
 )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.use(BootstrapVue)
-Vue.use(InputNumber)
 
 require('es6-shim')
 require('Keycloak')
 var keycloak = Keycloak(process.env.KEYCLOAK_JSON_URL)
 Vue.prototype.$keycloak = keycloak
 Vue.config.productionTip = false
+
 
 /* eslint-disable no-new */
 const app = new Vue({

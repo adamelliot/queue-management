@@ -15,62 +15,67 @@ limitations under the License.*/
 <template>
   <div id="App">
     <Header />
-    <div id="fixed-viewport-app" :style="{width:`${x}px`, height:`${y}px`,}">
+    <Socket v-show="1===2" />
+    <div v-if="user.username && isLoggedIn" :style="style">
       <Alert />
       <ExamAlert />
+      <SuccessExamAlert />
+      <FailureExamAlert />
       <Nav v-if="isLoggedIn" />
-      <Socket v-show="1===2" />
       <Feedback />
       <Response />
+    </div>
+    <div v-else-if="!user.username && isLoggedIn">
+      <LoginWarning />
     </div>
     <Footer />
   </div>
 </template>
 
 <script>
-  import { mapState, mapMutations, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
   import Alert from './alert'
   import ExamAlert from './exam-alert'
-  import Header from './layout/header'
-  import Socket from './Socket'
-  import Footer from './layout/footer'
+  import FailureExamAlert from './exams/failure-exam-alert'
   import Feedback from './feedback'
-  import Response from './response'
+  import Footer from './layout/footer'
+  import Header from './layout/header'
+  import Login from "./Login";
+  import LoginWarning from './login-warning'
   import Nav from './layout/nav'
+  import Response from './response'
+  import Socket from './Socket'
+  import SuccessExamAlert from './exams/success-exam-alert'
+
   export default {
     name: 'App',
-    components: { Nav, Alert, ExamAlert, Header, Socket, Footer, Feedback, Response },
-    created() {
-      this.getSize()
-    },
-    mounted() {
-      this.$nextTick(function() {
-        window.addEventListener('resize', this.getSize)
-      })
+    components: {
+      Alert,
+      ExamAlert,
+      FailureExamAlert,
+      Feedback,
+      Footer,
+      Header,
+      Login,
+      LoginWarning,
+      Nav,
+      Response,
+      Socket,
+      SuccessExamAlert,
     },
     computed: {
-      ...mapState(['isLoggedIn']),
-    },
-    data() {
-      return {
-        x: 0,
-        y: 0,
+      ...mapState(['isLoggedIn', 'showSchedulingIndicator', 'user' ]),
+      style() {
+        let output = {marginTop: 72+'px', width: '100%', overflowY: 'auto'}
+        if (this.showSchedulingIndicator) {
+          output['marginBottom'] = 100+'px'
+        }
+        if (!this.showSchedulingIndicator) {
+          output['marginBottom'] = 40+'px'
+        }
+        return output
       }
     },
-    methods: {
-      ...mapMutations(['updateViewportSizes']),
-      getSize() {
-        this.x = window.innerWidth
-        this.y = window.innerHeight - 110
-        this.updateStore()
-      },
-      updateStore() {
-        let x =  parseInt(this.x)
-        let y = parseInt(this.y)
-        this.updateViewportSizes({w: x})
-        this.updateViewportSizes({h: y})
-      }
-    }
   }
 </script>
 
@@ -100,8 +105,12 @@ limitations under the License.*/
     display: block;
     overflow-y: auto;
     overflow-x: auto;
+    background-color: blue;
     margin: 0px;
     padding: 0px;
+    position: absolute;
+    left: 0px;
+    top: 72px;
   }
   .view-screen-title {
     font-family: "Helvetica Neue",Arial,sans-serif;

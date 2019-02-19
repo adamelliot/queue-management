@@ -8,6 +8,7 @@
            lazy
            @cancel="cancel"
            @ok="postEvent"
+           @show="show"
            hide-header
            size="md">
     <div v-if="showModal">
@@ -56,7 +57,7 @@
 </template>
 
 <script>
-  import { mapState, mapMutations, mapActions } from 'vuex'
+  import { mapActions, mapMutations, mapState } from 'vuex'
   import moment from 'moment'
 
   export default {
@@ -99,12 +100,17 @@
         'setClickedDate',
       ]),
       cancel() {
+        this.$root.$emit('toggleOffsite', true)
         this.toggleBookingModal(false)
         this.toggleSchedulingIndicator(true)
         this.setClickedDate(null)
       },
+      show() {
+        this.selectedInvigilator = null
+      },
       postEvent(e) {
         e.preventDefault()
+        this.$root.$emit('toggleOffsite', true)
         let start = new moment(this.date.start).utc()
         let end = new moment(this.endTime).utc()
         let booking = {

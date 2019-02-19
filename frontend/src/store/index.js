@@ -1,40 +1,30 @@
 /*Copyright 2015 Province of British Columbia
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.*/
-
-
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.*/
 
 import Vue from 'vue'
 import 'es6-promise/auto'
 import Vuex from 'vuex'
-import { Axios } from './helpers'
+import { Axios, searchNestedObject } from './helpers'
+import moment from 'moment'
+
 var flashInt
 
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-
+  
   state: {
-    showSchedulingIndicator: false,
-    showOtherBookingModal: false,
-    schedulingOther: false,
-    calendarSetup: null,
-    showCalendarControls: true,
-    scheduling: false,
-    selectedExam: {},
-    showExamInventoryModal: false,
-    clickedDate: '',
-    showBookingModal: false,
     addIndITASteps: [
       {
         step: 1,
@@ -89,7 +79,7 @@ export const store = new Vuex.Store({
       },
       {
         step: 3,
-        title:'Exam Dates',
+        title: 'Exam Dates',
         questions: [
           {
             kind: 'exam_received',
@@ -112,13 +102,125 @@ export const store = new Vuex.Store({
             text: 'Additional Notes (optional)',
             minLength: 0,
             digit: false,
-          }
+          },
         ]
       },
       {
         step: 4,
         title:'Summary',
+        questions:
+          [
+            {
+              kind: null,
+              key: null,
+              text1:null,
+              text2: null,
+              minLength: 0,
+              digit: false,
+            },
+          ]
+      },
+    ],
+    addGroupITASteps: [
+      {
+        step: 1,
+        title:'Exam Type',
+        questions:
+        [
+          {
+            key: 'exam_type_id',
+            text: 'Exam Type ID / Colour',
+            kind:'dropdown',
+            minLength: 0,
+            digit: false,
+          }
+        ]
+      },
+      {
+        step: 2,
+        title: 'Basic Info',
         questions: [
+          {
+            key: 'office_id',
+            text: 'Office',
+            kind: 'office',
+            minLength: 0,
+            digit: false,
+          },
+          {
+            key: 'event_id',
+            text: 'Event ID',
+            kind: 'input',
+            minLength: 0,
+            digit: false
+          },
+          {
+            key: 'exam_name',
+            text: 'Exam Name',
+            kind: 'input',
+            minLength: 0,
+            digit: false,
+          },
+          {
+            key: 'number_of_students',
+            text: 'Number of Students',
+            minLength: 0,
+            kind: 'input',
+            digit: false
+          },
+        ]
+      },
+      {
+        step: 3,
+        title: 'Date, Time & Format',
+        questions: [
+          {
+            kind: 'date',
+            key: 'expiry_date',
+            text: 'Date and Time',
+            minLength: 0,
+            digit: false,
+          },
+          {
+            kind: 'time',
+            key: 'exam_time',
+            text: 'Exam Time',
+            minLength: 0,
+            digit: false,
+          },
+          {
+            kind: 'input',
+            key: 'offsite_location',
+            text: 'Location',
+            type: 'input',
+            minLength: 0,
+            digit: false,
+          },
+          {
+            key: 'exam_method',
+            text: 'Exam Method',
+            minLength: 0,
+            digit: false,
+            kind: 'select',
+            options: [
+              { text: 'paper', value: 'paper', id: 'exam_method' },
+              { text: 'online', value: 'online', id: 'exam_method' }
+            ]
+          },
+          {
+            kind: 'notes',
+            key: 'notes',
+            text: 'Additional Notes (optional)',
+            minLength: 0,
+            digit: false,
+          },
+        ]
+      },
+      {
+        step: 4,
+        title:'Summary',
+        questions:
+        [
           {
             kind: null,
             key: null,
@@ -130,41 +232,11 @@ export const store = new Vuex.Store({
         ]
       },
     ],
-    captureITAExamTabSetup: {
-      step: 1,
-      highestStep: 1,
-      stepsValidated: [],
-      errors: [],
-      showRadio: true,
-      success: '',
-      notes: false,
+    addITAExamModal: {
+      visible: false,
+      setup: 'individual',
+      step1MenuOpen: false,
     },
-    bookings: [],
-    examTypes: [],
-    capturedExam: {
-      event_id: null,
-      exam_name: null,
-      examinee_name: null,
-      expiry_date: null,
-      notes: null,
-      exam_received: false,
-      exam_received_date: null,
-      number_of_students: null,
-      exam_method: 'paper',
-      exam_type_id: null,
-      room_id: null,
-      office_id: null,
-    },
-    addIndividualITAExamModalVisibe: false,
-    exams: [],
-    iframeLogedIn: false,
-    invigilators: [],
-    viewPortSizes: {
-      h: null,
-      w: null
-    },
-    navigationVisible: true,
-    adminNavigation: 'csr',
     addModalForm: {
       citizen:'',
       comments: '',
@@ -178,27 +250,76 @@ export const store = new Vuex.Store({
       priority: 2
     },
     addModalSetup: null,
+    nonITAExam: false,
+    addNextService: false,
+    adminNavigation: 'csr',
     alertMessage: '',
     allCitizens: [],
     bearer: '',
+    bookings: [],
+    calendarEvents: [],
+    calendarSetup: null,
+    capturedExam: {},
+    captureITAExamTabSetup: {
+      step: 1,
+      highestStep: 1,
+      stepsValidated: [],
+      errors: [],
+      showRadio: true,
+      status: 'unknown',
+      notes: false,
+    },
     categories: [],
     channels: [],
-    citizens: [],
     citizenInvited: false,
+    citizens: [],
+    clickedDate: '',
+    csr_states: [],
     csrs: [],
     dismissCount: 0,
+    editedBooking: null,
+    editedBookingOriginal: null,
+    editExamFailure: false,
+    editExams: [],
+    editedGroupBooking: null,
+    editExamSuccess: false,
     examAlertMessage: '',
+    examEditSuccessMessage: '',
+    examEditFailureMessage: '',
     examDismissCount: 0,
+    examSuccessDismiss : 0,
+    examMethods: [
+      {text: 'paper', value: 'paper', id: 'exam_method'},
+      {text: 'online', value: 'online', id: 'exam_method'}
+    ],
+    exams: [],
+    examTypes: [],
     feedbackMessage: '',
+    groupBookings: [],
+    showGenFinReportModal: false,
+    iframeLogedIn: false,
+    invigilators: [],
     isLoggedIn: false,
+    navigationVisible: true,
     nowServing: false,
+    offices: [],
+    officeFilter: null,
     officeType: null,
     performingAction: false,
+    rescheduling: false,
+    returnExams: [],
     rooms: [],
+    roomResources: [],
+    scheduling: false,
+    schedulingOther: false,
+    selectedBooking: {},
+    selectedExam: {},
+    selectedOffice: {},
+    selectionIndicator: false,
+    serveModalAlert: '',
     serveNowAltAction: false,
     serveNowStyle: 'btn-primary',
     serviceBegun: false,
-    serveModalAlert: '',
     serviceModalForm: {
       citizen_id: null,
       service_citizen: null,
@@ -211,11 +332,20 @@ export const store = new Vuex.Store({
     services: [],
     showAddModal: false,
     showAdmin: false,
+    showBookingModal: false,
+    showCalendarControls: true,
+    showEditBookingModal: false,
+    showEditGroupBookingModal: false,
+    showEditExamModal: false,
+    showExamInventoryModal: false,
     showFeedbackModal: false,
     showGAScreenModal: false,
+    showSelectInvigilatorModal: false,
+    showOtherBookingModal: false,
     showResponseModal: false,
+    showReturnExamModalVisible: false,
+    showSchedulingIndicator: false,
     showServiceModal: false,
-    addNextService: false,
     user: {
       csr_id: null,
       csr_state_id: null,
@@ -236,48 +366,25 @@ export const store = new Vuex.Store({
       qt_xn_csr_ind: true,
       receptionist_ind: null
     },
-    csr_states: [],
-    userLoadingFail: false
+    userLoadingFail: false,
   },
 
   getters: {
-    room_resources(state) {
-      if (state.rooms.length > 0) {
-        return state.rooms.map(room =>
-          ({
-            id: room.room_id,
-            title: room.room_name,
-            eventColor: room.color
-          })
-        )
-      } else {
-        return []
-      }
+    
+    get_room_by_id: (state) => (id) => {
+      return state.rooms.find(room => room.id == id)
     },
     
-    calendar_events(state) {
-      if (state.bookings.length > 0) {
-        let bookings = []
-        state.bookings.forEach(booking => {
-          let obj = {
-            id: booking.booking_id,
-            title: booking.booking_name,
-            start: booking.start_time,
-            end: booking.end_time,
-            resourceId: booking.room_id,
-            invigilator: booking.invigilator,
-            room: booking.room,
-          }
-          if (state.exams) {
-            if (state.exams.find(ex => ex.booking_id == booking.booking_id)) {
-              obj['exam'] = state.exams.find(ex => ex.booking_id == booking.booking_id)
-            }
-          }
-          bookings.push(obj)
-        })
-        return bookings
-      }
-      return []
+    get_exam_by_id: (state) => (id) => {
+      return state.exams.find(exam => exam.id == id)
+    },
+    
+    get_booking_by_id: (state) => (id) => {
+      return state.bookings.find(booking => booking.id = id)
+    },
+  
+    filtered_calendar_events: (state, getters) => (search) => {
+      return state.calendarEvents.filter(event => searchNestedObject(event, search))
     },
     
     exam_inventory(state) {
@@ -287,12 +394,16 @@ export const store = new Vuex.Store({
       return state.exams
     },
     
+    exam_object_id: (state, getters) => (examId) => {
+      return state.examTypes.find(type => type.exam_type_id == examId)
+    },
+    
     exam_object(state) {
       if (state.capturedExam && state.capturedExam.exam_type_id) {
         return state.examTypes.find(type => type.exam_type_id == state.capturedExam.exam_type_id)
       }
       return {
-        exam_type_colour: '',
+        exam_color: '',
         exam_type_name: '',
         exam_type_id: ''
       }
@@ -305,7 +416,8 @@ export const store = new Vuex.Store({
       return false
     },
 
-    addIndividualITAButton(state) {
+    add_exam_modal_navigation_buttons(state) {
+      //controls disabled/enabled state of and current classes applied to the 'next' button in AddExamFormModal
       let setup = state.captureITAExamTabSetup
       if (setup.stepsValidated.indexOf(setup.step) === -1) {
         return {
@@ -469,24 +581,6 @@ export const store = new Vuex.Store({
 
   actions: {
 
-    examsOnLogin(context) {
-      if (context.state.user && context.state.groupExam && context.state.individualExam) {
-        // Set alert message to display that both group and individual exams need attention
-        context.commit('setExamAlert', 'There are Individual Exams and Group Exams that require attention')
-        console.log('Set BOTH Exam Alert Message')
-      }
-      else if (context.state.user && context.state.groupExam) {
-        // Set alert message to display that only group exams need attention
-        context.commit('setExamAlert', 'There are Group Exams that require attention')
-        console.log('Set GROUP Exam Alert Message Only')
-      }
-      else if (context.state.user && context.state.individualExam) {
-        // Set alert message to display that only individual exams need attention
-        context.commit('setExamAlert', 'There are Individual Exams that require attention')
-        console.log('Set INDIVIDUAL Exam Alert Message Only')
-      }
-    },
-
     loginIframe(context) {
       Axios(context).get('/login/').then( () => {
         context.commit('setiframeLogedIn', true)
@@ -497,6 +591,38 @@ export const store = new Vuex.Store({
       if (view !== null) {
         context.commit("setNavigation", view)
       }
+    },
+  
+    deleteBooking(context, id) {
+      return new Promise((resolve, reject) => {
+        Axios(context).delete(`/bookings/${id}/`).then(resp => {
+          resolve(resp.data)
+        })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    
+    putRequest(context, payload) {
+      return new Promise((resolve, reject) => {
+        Axios(context).put(payload.url, payload.data).then( () => {
+          resolve()
+        }).catch( () => {
+          reject()
+        })
+      })
+    },
+    
+    putBooking(context, payload) {
+      return new Promise((resolve, reject) => {
+        Axios(context).put(`/bookings/${payload.id}/`, payload.changes).then(resp => {
+          resolve(resp.data)
+        })
+          .catch(error => {
+            reject(error)
+          })
+      })
     },
 
     flashServeNow(context, payload) {
@@ -531,13 +657,33 @@ export const store = new Vuex.Store({
     getBookings(context) {
       return new Promise((resolve, reject) => {
         Axios(context).get('/bookings/')
-          .then(resp => {
-            context.commit('setBookings', resp.data.bookings)
-            resolve(resp.data.bookings)
+        .then(resp => {
+          context.commit('setBookings', resp.data.bookings)
+          let calendarEvents = []
+          resp.data.bookings.forEach(b => {
+            let booking = {}
+            if (b.room_id) {
+              booking.resourceId = b.room_id
+              booking.room = b.room
+            }
+            if (!b.room_id) {
+              booking.resourceId = '_offsite'
+            }
+            if (b.invigilator_id) {
+              booking.invigilator = b.invigilator
+              booking.invigilator_id = b.invigilator_id
+            }
+            booking.start = b.start_time
+            booking.end = b.end_time
+            booking.title = b.booking_name
+            booking.id = b.booking_id
+            booking.exam = context.state.exams.find(ex => ex.booking_id == b.booking_id) || false
+
+            calendarEvents.push(booking)
           })
-          .catch( errpr => {
-            reject(error)
-          })
+          context.commit('setEvents', calendarEvents)
+          resolve()
+        }).catch(() => { reject() })
       })
     },
 
@@ -618,7 +764,33 @@ export const store = new Vuex.Store({
       return new Promise((resolve, reject) => {
         Axios(context).get('/exams/')
           .then(resp => {
-            context.commit('setExams', resp.data.exams)
+            if (resp.data.exams.length > 0) {
+              context.commit('setExams', resp.data.exams)
+              let groupExams = resp.data.exams.filter(exm => exm.exam_type.exam_type_name.includes('Group'))
+              let groupBookings = groupExams.map(ex =>
+                ({
+                  title: ex.exam_name,
+                  start: new moment(ex.expiry_date).utc().local().toString(),
+                  end: new moment(ex.expiry_date).add(ex.exam_type.number_of_hours, 'h').toString(),
+                  resourceId: '_offsite',
+                  exam: ex,
+                })
+              )
+              context.commit('setGroupBookings', groupBookings)
+            }
+            resolve(resp)
+          })
+          .catch(error => {
+            console.log(error)
+            reject(error)
+          })
+      })
+    },
+
+    getExamsExport(context, url) {
+      return new Promise((resolve, reject) => {
+        Axios(context).get(url)
+          .then(resp => {
             resolve(resp)
           })
           .catch(error => {
@@ -633,7 +805,6 @@ export const store = new Vuex.Store({
         Axios(context).get('/exam_types/')
           .then(resp => {
             context.commit('setExamTypes', resp.data.exam_types)
-            console.log('called exam types getter')
             resolve(resp.data.exam_types)
           })
           .catch(error => {
@@ -657,12 +828,42 @@ export const store = new Vuex.Store({
       })
     },
     
+    getOffices(context, payload=null) {
+      if (context.state.user.role.role_code === 'LIAISON' || payload === 'force') {
+        return new Promise((resolve, reject) => {
+          Axios(context).get('/offices/').then(resp => {
+            context.commit('setOffices', resp.data.offices)
+            resolve(resp.data.offices)
+          })
+            .then(error => {
+              reject(error)
+            })
+        })
+      }
+    },
+
     getRooms(context) {
       return new Promise((resolve, reject) => {
         Axios(context).get('/rooms/')
           .then(resp => {
+            let resources = []
+            if (resp.data.rooms.length > 0) {
+              resources = resp.data.rooms.map(room =>
+                ({
+                  id: room.room_id,
+                  title: room.room_name,
+                  eventColor: room.color
+                })
+              )
+            }
+            resources.push({
+              id: '_offsite',
+              title: 'Offsite',
+              eventColor: '#82ff68'
+            })
             context.commit('setRooms', resp.data.rooms)
-            resolve(resp.data.rooms)
+            context.commit('setResources', resources)
+            resolve(resources)
           })
           .catch( error => {
             reject(error)
@@ -671,7 +872,7 @@ export const store = new Vuex.Store({
     },
 
     getServices(context) {
-      let office_id = context.state.user.office.office_id
+      let office_id = context.state.user.office_id
       Axios(context).get(`/services/?office_id=${office_id}`)
         .then( resp => {
           let services = resp.data.services.filter(service => service.actual_service_ind === 1)
@@ -850,8 +1051,17 @@ export const store = new Vuex.Store({
     },
 
     clickAddExamSubmit(context, type) {
-      context.dispatch('postExam', type).finally( () => {
-        context.dispatch('getExams')
+      return new Promise((resolve, reject) => {
+        if (type === 'group') {
+          context.dispatch('postITAGroupExam').then(() => {
+            resolve('success')
+          }).catch(() => { reject('failed') })
+        }
+        if (type === 'individual') {
+          context.dispatch('postITAIndividualExam').then(() => {
+            resolve('success')
+          }).catch(() => { reject('failed') })
+        }
       })
     },
 
@@ -1298,7 +1508,6 @@ export const store = new Vuex.Store({
     },
 
     postFinishService(context, payload) {
-      console.log(payload);
       return new Promise((resolve, reject) => {
         let url = `/citizens/${payload.citizen_id}/finish_service/?inaccurate=${payload.inaccurate}`
         Axios(context).post(url).then(resp=>{
@@ -1357,9 +1566,17 @@ export const store = new Vuex.Store({
     },
     
     putExam(context, payload) {
+      let bookingId, examId
+      if (typeof payload === 'object' && payload !== null) {
+        bookingId = payload.bookingId
+        examId = payload.examId
+      } else {
+        bookingId = payload
+        examId = context.state.selectedExam.exam_id
+      }
       return new Promise((resolve, reject) => {
-        let url = `/exams/${context.state.selectedExam.exam_id}/`
-        Axios(context).put(url, {booking_id: payload}).then( resp =>{
+        let url = `/exams/${examId}/`
+        Axios(context).put(url, {booking_id: bookingId}).then( resp =>{
           resolve(resp)
         })
           .catch(error => {
@@ -1367,8 +1584,40 @@ export const store = new Vuex.Store({
           })
       })
     },
+
+    putExamInfo(context, payload) {
+      return new Promise((resolve, reject) => {
+        let url = `/exams/${context.state.selectedExam.exam_id}/`
+        Axios(context).put(url, payload).then( resp =>{
+          resolve(resp)
+          context.commit('setEditExamSuccess', true)
+          context.commit('setExamEditSuccessMessage', 'Success! Exam changes were committed.')
+        })
+          .catch(error => {
+            context.commit('setEditExamFailure', true)
+            context.commit('setExamEditFailureMessage', 'There was a problem submitting changes to your exam.')
+            reject(error)
+          })
+      })
+    },
+
+    putBookingInfo(context, payload) {
+      return new Promise((resolve, reject) => {
+        let url = `/bookings/${context.state.selectedBooking.booking_id}/`
+        Axios(context).put(url, payload).then( resp =>{
+          resolve(resp)
+        })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
     
     postBooking(context, payload) {
+      if (!Object.keys(payload).includes('office_id')) {
+        payload['office_id'] = context.state.user.office_id
+      }
       return new Promise((resolve, reject) => {
         Axios(context).post('/bookings/', payload).then( resp => {
           resolve(resp.data.booking.booking_id)
@@ -1381,6 +1630,7 @@ export const store = new Vuex.Store({
     
     finishBooking(context) {
       context.dispatch('getBookings')
+      context.commit('setSelectionIndicator', false)
       context.commit('navigationVisible', true)
       context.commit('toggleCalendarControls', true)
       context.commit('toggleScheduling', false)
@@ -1390,44 +1640,76 @@ export const store = new Vuex.Store({
       context.commit('toggleOtherBookingModal', false)
       context.commit('setClickedDate', null)
       context.commit('setSelectedExam', null)
+      context.commit('setEditedBooking', null)
+      context.commit('toggleEditBookingModal', false)
     },
-
-    postExam(context, payload) {
-      let capturedExam = context.state.capturedExam
-      let examObj = {}
-      let steps
-      let additionalKeys = {}
-      switch (payload) {
-        case 'ind_ita':
-          steps = context.state.addIndITASteps
-          additionalKeys = {
-            exam_received: 1,
-            exam_returned_ind: 0,
-            office_id: context.state.user.office_id
-          }
-          break
-        case 'group_ita':
-          steps = null
-          break
-        default:
-          steps = null
-          end
+    
+    postITAGroupExam(context) {
+      let responses = Object.assign( {}, context.state.capturedExam)
+      let date = new moment(responses.expiry_date).local().format('YYYY-MM-DD')
+      let time = new moment(responses.exam_time).local().format('HH:mm:ss')
+      let datetime = date+'T'+time
+      let start = new moment(datetime).local()
+      let length = context.state.examTypes.find(ex => ex.exam_type_id == responses.exam_type_id).number_of_hours
+      let end = start.clone().add(length, 'hours')
+      let booking = {
+        start_time: start.clone().utc().format('YYYY-MM-DD[T]HH:mm:ssZ'),
+        end_time: end.clone().utc().format('YYYY-MM-DD[T]HH:mm:ssZ'),
+        fees: 'false',
+        booking_name: responses.exam_name,
+        office_id: responses.office_id,
       }
-      let keys = steps.map(step=>step.questions.map(q=>q.key)).flat()
-      keys.forEach(key => {
-        examObj[key] = capturedExam[key]
-      })
-      let data = {...examObj, ...additionalKeys}
-
+      
+      let defaultValues = {
+        exam_received: 0,
+        exam_returned_ind: 0,
+        examinee_name: 'group exam',
+        expiry_date: new moment('2499-01-01T12:00:00-08:00').toString()
+      }
+      delete responses.exam_time
+      if (responses.notes === null) {
+        data.notes = ''
+      }
+      let postData = {...responses, ...defaultValues}
+      
       return new Promise((resolve, reject) => {
-        Axios(context).post('/exams/', data).then(resp=>{
-          context.commit('updateCaptureTab', {success: true})
-          resolve(resp)
-        })
-          .catch( error => {
-            context.commit('updateCaptureTab', {success: false})
-            reject(error)
-        })
+        Axios(context).post('/exams/', postData)
+        .then(examResp => {
+            let { exam_id } = examResp.data.exam
+            context.dispatch('postBooking', booking)
+            .then( bookingResp => {
+                let putObject = {
+                  examId: exam_id,
+                  bookingId: bookingResp,
+                  officeId: responses.office_id
+                }
+                context.dispatch('putExam', putObject)
+                .then( () => {
+                    resolve()
+                }).catch( () => { reject() })
+            }).catch( () => { reject() })
+        }).catch( () => { reject() })
+      })
+    },
+  
+    postITAIndividualExam(context) {
+      let responses = Object.assign( {}, context.state.capturedExam)
+      let defaultValues = {
+        exam_received: 1,
+        exam_returned_ind: 0,
+        number_of_students: 1,
+        office_id: context.state.user.office_id
+      }
+      responses.expiry_date = moment(responses.expiry_date).format('YYYY-MM-DD')
+      if (responses.notes === null) {
+        responses.notes = ''
+      }
+      let postData = {...responses, ...defaultValues}
+  
+      return new Promise((resolve, reject) => {
+        Axios(context).post('/exams/', postData)
+          .then(() => { resolve() })
+          .catch(() => { reject() })
       })
     },
 
@@ -1839,9 +2121,21 @@ export const store = new Vuex.Store({
       state.dismissCount = 5
     },
 
+    setSelectedOffice(state, payload) {
+      state.selectedOffice = payload
+    },
+
     setExamAlert(state, payload) {
       state.examAlertMessage = payload
       state.examDismissCount = 999
+    },
+
+    setExamEditSuccessMessage(state, payload) {
+      state.examEditSuccessMessage = payload
+    },
+
+    setExamEditFailureMessage(state, payload) {
+      state.examEditFailureMessage = payload
     },
 
     setModalAlert(state, payload) {
@@ -1886,6 +2180,10 @@ export const store = new Vuex.Store({
 
     examDismissCountDown(state, payload) {
       state.examDismissCount = payload
+    },
+
+    examSuccessCountDown(state, payload) {
+      state.examSuccessDismiss = payload
     },
 
     toggleInvitedStatus: (state, payload) => state.citizenInvited = payload,
@@ -1933,20 +2231,27 @@ export const store = new Vuex.Store({
       state.showResponseModal = false
     },
 
-    updateViewportSizes(state, attr) {
-      let key = Object.keys(attr)[0]
-      Vue.set(
-        state.viewPortSizes,
-        key,
-        attr[key]
-      )
-    },
-
     setiframeLogedIn: (state, value) => state.iframeLogedIn = value,
 
     setNavigation: (state, value) => state.adminNavigation = value,
+  
+    toggleAddITAExamModal(state, payload) {
+      if (typeof payload === 'object') {
+        Object.keys(payload).forEach(key => {
+          Vue.set(
+            state.addITAExamModal,
+            key,
+            payload[key]
+          )
+        })
+      } else {
+        state.addITAExamModal.visible = payload
+      }
+    },
 
-    toggleAddIndividualITAExam: (state, payload) => state.addIndividualITAExamModalVisibe = payload,
+    toggleGenFinReport(state, payload) {
+      state.showGenFinReportModal = payload
+    },
 
     captureExamDetail(state, payload) {
       if (payload.key === 'exam_type_id') {
@@ -1962,20 +2267,7 @@ export const store = new Vuex.Store({
       )
     },
 
-    resetCaptureForm(state) {
-      let keys = Object.keys(state.capturedExam)
-      keys.forEach(key => {
-        let value = null
-        if (key === 'exam_method') {
-          value = 'paper'
-        }
-        Vue.set(
-          state.capturedExam,
-          key,
-          value
-        )
-      })
-    },
+    resetCaptureForm: (state) => state.capturedExam = {},
 
     resetCaptureTab(state) {
       let initialState = {
@@ -2029,8 +2321,22 @@ export const store = new Vuex.Store({
     setClickedDate: (state, payload) => state.clickedDate = payload,
     
     toggleExamInventoryModal: (state, payload) => state.showExamInventoryModal = payload,
-  
+
+    toggleNonITAExamModal: (state, payload) => state.nonITAExam = payload,
+
+    toggleEditExamModal: (state, payload) => state.showEditExamModal = payload,
+
+    toggleReturnExamModalVisible: (state, payload) => state.showReturnExamModalVisible = payload,
+
+    setEditExamInfo: (state, payload) => state.editExams = payload,
+
+    setReturnExamInfo: (state, payload) => state.returnExams = payload,
+
+    setExamMethods: (state, payload) => state.examMethods = payload,
+
     setSelectedExam: (state, payload) => state.selectedExam = payload,
+
+    setSelectedBooking: (state, payload) => state.selectedBooking = payload,
   
     toggleScheduling: (state, payload) => state.scheduling = payload,
     
@@ -2045,5 +2351,53 @@ export const store = new Vuex.Store({
     toggleOtherBookingModal: (state, payload) => state.showOtherBookingModal = payload,
   
     toggleSchedulingIndicator: (state, payload) => state.showSchedulingIndicator= payload,
+
+    setEditExamSuccess: (state, payload) => state.editExamSuccess = payload,
+
+    setEditExamFailure: (state, payload) => state.editExamFailure = payload,
+  
+    toggleEditBookingModal: (state, payload) => state.showEditBookingModal = payload,
+  
+    setEditedBooking(state, payload) {
+      if (payload) {
+        let eventCopy = Object.assign({}, payload)
+        state.editedBooking = eventCopy
+      }
+      if (!payload) {
+        state.editedBooking = null
+      }
+    },
+  
+    toggleRescheduling: (state, payload) => state.rescheduling = payload,
+  
+    setEditedBookingOriginal: (state, payload) => state.editedBookingOriginal = payload,
+    
+    setOffices: (state, payload) => state.offices = payload,
+    
+    setOfficeFilter: (state, payload) => state.officeFilter = payload,
+  
+    setSelectionIndicator: (state, payload) => state.selectionIndicator = payload,
+    
+    toggleAddITAExamVisibility(state, payload) {
+      Vue.set(
+        state.addITAExamModal,
+        'visible',
+        payload
+      )
+    },
+    setGroupBookings: (state, payload) => state.groupBookings = payload,
+  
+    setResources: (state, payload) => state.roomResources = payload,
+    
+    toggleSelectInvigilatorModal: (state, payload) => state.showSelectInvigilatorModal = payload,
+    
+    setEvents: (state, payload) => state.calendarEvents = payload,
+    
+    setInventoryEditedBooking(state, booking) {
+      let bookingCopy = Object.assign({}, booking)
+      state.editedBooking = bookingCopy
+    },
+  
+    toggleEditGroupBookingModal: (state, payload) => state.showEditGroupBookingModal = payload,
   }
 })

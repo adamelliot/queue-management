@@ -64,7 +64,8 @@ limitations under the License.*/
         socket.on('get_Csr_State_IDs',()=>{this.getCsrStateIDs()})
         socket.on('update_customer_list',()=>{this.onUpdateCustomerList()})
         socket.on('update_active_citizen', (citizen) => { this.onUpdateActiveCitizen(citizen) } )
-        socket.on('csr_update', ()=>{this.onCSRUpdate()})
+        socket.on('csr_update', (data)=>{this.onCSRUpdate(data)})
+        socket.on('clear_csr_cache', (data)=>{this.onClearCsrCache(data)})
       },
 
       join() {
@@ -72,9 +73,12 @@ limitations under the License.*/
         )
       },
 
-      onCSRUpdate(){
-          console.log('socket received: "updateCSRList"')
-          this.$store.dispatch('getCsrs')
+      onCSRUpdate(data){
+          console.log('socket received: "csr_update"')
+          if (this.$store.state.user.role.role_code === "GA") {
+            console.log('--> person is a GA -> calling getCsrs routine')
+            this.$store.dispatch('getCsrs')
+          }
       },
 
       onConnect() {
@@ -112,6 +116,11 @@ limitations under the License.*/
       onUpdateCustomerList() {
           console.log('socket received: "updateCustomerList"')
           this.$store.dispatch('getAllCitizens')
+      },
+
+      onClearCsrCache(data) {
+        console.log('socket received: "clear_csr_cache"')
+        socket.emit('clear_csr_user_id', data.id)
       },
 
       getCsrStateIDs() {

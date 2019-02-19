@@ -1,5 +1,5 @@
 <template>
-  <b-modal v-model="modal"
+  <b-modal v-model="modalVisible"
            :no-close-on-backdrop="true"
            hide-ok
            hide-header
@@ -74,8 +74,9 @@
       <AddExamFormConfirm v-if="step==4" :submitMsg="submitMsg" />
     </template>
     <template v-if="!unSubmitted">
-      <div v-if="success==='' " class="loader" style="margin-top: auto"></div>
-      <div v-if="success">
+      <div v-if="status==='unknown' "
+           class="loader" style="margin-top: auto"></div>
+      <div v-if="status==='success'">
         <b-container>
           <b-row align-v="center"
                  align-h="center"
@@ -87,14 +88,14 @@
           </b-row>
         </b-container>
       </div>
-      <div v-if="!success">
+      <div v-if="status==='failed'">
         <b-container>
           <b-row align-v="center"
                  align-h="center"
                  align-content="center">
             <b-col>
               <p class="message-text">Something Went Wrong</p>
-              <p><b-button>Try Again</b-button></p>
+              <p><b-button @click="tryAgain">Try Again</b-button></p>
             </b-col>
           </b-row>
         </b-container>
@@ -107,6 +108,7 @@
   import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
   import AddExamFormController from './add-exam-form-controller'
   import AddExamFormConfirm from './add-exam-form-confirm'
+  import moment from 'moment'
 
   export default {
     name: 'AddExamFormModal',
@@ -115,25 +117,24 @@
       return ({
         submitMsg: '',
         unSubmitted: true,
+        status: 'unknown',
       })
     },
     computed: {
       ...mapGetters({
-        button: 'addIndividualITAButton',
+        button: 'add_exam_modal_navigation_buttons',
       }),
       ...mapState({
         exam: state => state.capturedExam,
         examTypes: state => state.examTypes,
-        modalVisible: state => state.addIndividualITAExamModalVisibe,
-        steps: state => state.addIndITASteps,
+        addITAExamModal: state => state.addITAExamModal,
+        groupITASteps: state => state.groupITASteps,
+        indITASteps: state => state.indITASteps,
         tab: state => state.captureITAExamTabSetup,
+        user: state => state.user,
+        groupITASteps: state => state.addGroupITASteps,
+        indITASteps: state => state.addIndITASteps,
       }),
-      success() {
-        if (this.tab) {
-          return this.tab.success
-        }
-        return false
-      },
       errors() {
         if (this.tab.errors) {
           return this.tab.errors
@@ -142,12 +143,12 @@
           return []
         }
       },
-      modal: {
+      modalVisible: {
         get() {
-          return this.modalVisible
+          return this.addITAExamModal.visible
         },
         set(e) {
-          this.toggleAddIndividualITAExam(e)
+          this.toggleAddITAExamVisibility(e)
         }
       },
       step() {
@@ -156,8 +157,19 @@
         }
         return 1
       },
+      steps() {
+        let { setup } = this.addITAExamModal
+        if (setup === 'group') {
+          return this.groupITASteps
+        }
+        if (setup === 'individual') {
+          return this.indITASteps
+        }
+      },
       tabs() {
-        return this.steps.slice(0, this.tab.highestStep)
+        if (this.steps && Array.isArray(this.steps)) {
+          return this.steps.slice(0, this.tab.highestStep)
+        }
       },
       validated() {
         if (this.tab && this.tab.stepsValidated) {
@@ -170,12 +182,14 @@
       },
     },
     methods: {
-      ...mapActions(['clickAddExamSubmit']),
+      ...mapActions(['clickAddExamSubmit', 'getExams']),
       ...mapMutations([
+        'captureExamDetail',
         'resetCaptureForm',
         'resetCaptureTab',
-        'toggleAddIndividualITAExam',
+        'toggleAddITAExamModal',
         'updateCaptureTab',
+        'toggleAddITAExamVisibility'
       ]),
       tabWarning(i) {
         if (!Array.isArray(this.errors)) return ''
@@ -185,7 +199,6 @@
               if (this.steps.some(step=>step.step==error)) {
                 list.push(this.steps.find(step=>step.step==error)).questions
               }
-
             })
           if (list.includes(i)) {
             return {color: 'red'}
@@ -205,7 +218,8 @@
         this.updateCaptureTab({step})
       },
       clickCancel() {
-        this.toggleAddIndividualITAExam(false)
+        this.resetModal()
+        this.toggleAddITAExamModal({visible: false, setup: null, step1MenuOpen: false})
       },
       clickNext() {
         let step = this.step + 1
@@ -219,19 +233,46 @@
         this.updateCaptureTab({step: e})
       },
       initialize() {
+        this.captureExamDetail({key:'notes', value: ''})
+        let d = new Date()
+        let today = moment(d).format('YYYY-MM-DD')
+        this.captureExamDetail({key:'exam_received_date', value: today})
         this.unSubmitted = true
         this.submitMsg = ''
+      },
+      tryAgain() {
+        this.unSubmitted = true
+        this.status = 'unknown'
       },
       submit() {
         this.unSubmitted = false
         this.submitMsg = ''
-        this.clickAddExamSubmit('ind_ita')
+        if (this.addITAExamModal.setup === 'group') {
+          this.clickAddExamSubmit('group').then( resp => {
+            this.status = resp
+            this.getExams()
+          }).catch( error => {
+            this.status = error
+            this.getExams()
+          })
+        }
+        if (this.addITAExamModal.setup === 'individual') {
+          this.clickAddExamSubmit('individual').then( resp => {
+            this.status = resp
+            this.getExams()
+          }).catch( error => {
+            this.status = error
+            this.getExams()
+          })
+        }
       },
       resetModal() {
         this.resetCaptureForm()
         this.resetCaptureTab()
         this.unSubmitted = true
         this.submitMsg = ''
+        this.status = 'unknown'
+
       },
       setWarning() {
         if (!this.errors.includes(this.step)) {

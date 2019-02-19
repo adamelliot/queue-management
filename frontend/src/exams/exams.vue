@@ -1,11 +1,11 @@
 <template>
-  <div v-if="user.username">
+  <div v-if="user.username" style="min-height: 350px">
     <div v-if="showExams">
       <span class="title margin-left mt-3">Exam Inventory</span><br>
       <span class="subheader margin-left">Click an exam in the table to review its details and fulfill the exam process</span>
       <ExamInventoryTable mode="inventory" />
     </div>
-    <div v-else class=center>
+    <div class="center" v-else>
       <h1> Coming Soon! </h1>
     </div>
   </div>
@@ -16,8 +16,9 @@
 </template>
 
 <script>
-  import { mapState, mapGetters } from 'vuex'
+  import { mapGetters, mapState } from 'vuex'
   import ExamInventoryTable from './exam-inventory-table'
+
   export default {
     name: "Exams",
     computed: {

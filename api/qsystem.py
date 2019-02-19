@@ -40,7 +40,7 @@ log_error_flag = application.config['LOG_ERRORS']
 if log_error_flag:
     socketio = SocketIO(logger=True, engineio_logger=True)
 else:
-    socketio = SocketIO(engineio_logger=True)
+    socketio = SocketIO(logger=False, engineio_logger=False)
 
 if application.config['ACTIVE_MQ_URL'] is not None:
     socketio.init_app(application, async_mode='eventlet', message_queue=application.config['ACTIVE_MQ_URL'], path='/api/v1/socket.io')
@@ -123,6 +123,7 @@ import app.resources.theq.csr_detail
 import app.resources.theq.feedback
 import app.resources.theq.health
 import app.resources.theq.login
+import app.resources.theq.offices
 import app.resources.theq.services
 import app.resources.theq.service_requests_list
 import app.resources.theq.service_requests_detail
@@ -139,6 +140,7 @@ import app.resources.bookings.exam.exam_detail
 import app.resources.bookings.exam.exam_list
 import app.resources.bookings.exam.exam_post
 import app.resources.bookings.exam.exam_put
+import app.resources.bookings.exam.exam_export_list
 import app.resources.bookings.invigilator.invigilator_list
 import app.resources.bookings.room.room_list
 import app.resources.bookings.exam_type.exam_type_list

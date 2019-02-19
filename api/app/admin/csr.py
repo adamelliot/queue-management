@@ -22,7 +22,7 @@ from flask_admin.helpers import get_redirect_target
 from flask_admin.model.helpers import get_mdict_item_or_list
 from flask_login import current_user
 from sqlalchemy import or_
-from qsystem import db, cache
+from qsystem import db, cache, socketio
 
 
 class CSRConfig(Base):
@@ -109,6 +109,9 @@ class CSRConfig(Base):
 
         #  We know model is good.  Save id of CSR you're editing for later use.
         csr_id = get_mdict_item_or_list(request.args, 'id')
+        #  Delete next two lines later.
+        csr_old = CSR.query.filter_by(csr_id=csr_id).first()
+        csr_office_old = csr_old.office.office_name
 
         form = self.edit_form(obj=model)
         if not hasattr(form, '_validated_ruleset') or not form._validated_ruleset:
@@ -116,8 +119,18 @@ class CSRConfig(Base):
 
         if self.validate_form(form) and self.update_model(form, model):
 
-            #  Clear cache for the user just editted
-            CSR.update_user_cache(csr_id)
+            #  Trim the user name, if necessary.
+            updated_csr = CSR.query.filter_by(csr_id=csr_id).first()
+            if updated_csr.username != updated_csr.username.strip():
+                updated_csr.username = updated_csr.username.strip()
+                db.session.add(updated_csr)
+                db.session.commit()
+
+            socketio.emit('clear_csr_cache', { "id": csr_id})
+            socketio.emit('csr_update', \
+                          {"csr_id": csr_id, \
+                           "receptionist_ind": updated_csr.receptionist_ind}, \
+                           room=current_user.office_id)
 
             flash(gettext('''Record was successfully saved.'''), 'success')
             if '_add_another' in request.form:
