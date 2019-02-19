@@ -36,6 +36,7 @@ limitations under the License.*/
               {{data.value}}
               {{data.item._rowVariant=''}}
             </div>
+            <div v-if="networkStatus.networkDown" class="loading small"><div></div><div></div><div></div><div></div><div></div></div>
           </template>
           <template slot="overflow" slot-scope="data">
             {{ this.showOverflow === false ?
@@ -54,7 +55,7 @@ limitations under the License.*/
       </div>
     </div>
   </div>
-  <div class="bottom-flex-div">
+  <div v-if="!networkStatus.networkDown" class="bottom-flex-div">
       <div class="flex-title"> Currently waiting: {{waiting}}</div>
     </div>
 </div>
@@ -78,7 +79,7 @@ export default {
     this.$root.$on('addToBoard',() => { this.updateBoard() })
     this.initializeBoard()
   },
-  props: ['smartboardData'],
+  props: ['smartboardData', 'networkStatus'],
   components: { Video },
   data() {
     return {

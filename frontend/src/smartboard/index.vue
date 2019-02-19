@@ -18,12 +18,14 @@ limitations under the License.*/
       <div class="flex-title">{{ date }} {{ time }}</div>
     </div>
     <CallByTicket v-if="officetype==='callbyticket'"
-                  :smartboardData="{office_number}"></CallByTicket>
+                  :smartboardData="{office_number}" :networkStatus="{networkDown}"></CallByTicket>
     <CallByName v-else-if="officetype==='callbyname' || officetype==='reception'"
-                :smartboardData="{office_number}"></CallByName>
+                :smartboardData="{office_number}" :networkStatus="{networkDown}"></CallByName>
     <NonReception v-else-if="officetype==='nocallonsmartboard'"></NonReception>
     <div v-else>Please stand by...</div>
     <BoardSocket :smartboardData="{office_number}"></BoardSocket>
+
+    <div v-if="networkDown==true" id="network-status" class="loading small"><div></div><div></div><div></div><div></div><div></div></div>
   </div>
 </template>
 
@@ -50,7 +52,19 @@ export default {
   },
 
   mounted() {
-    setInterval( () => { this.now() }, 3000)
+    setInterval( () => { this.now() }, 1000)
+
+    var fetchNetworkStatus = () => {
+      axios
+        .get('http://localhost/health')
+        .then(response => {
+          this.networkDown = !response.data.connected;
+          this.$forceUpdate()
+
+          setTimeout(fetchNetworkStatus, 1000);
+        })
+    }
+    fetchNetworkStatus()
   },
 
   props: ['office_number'],
@@ -90,6 +104,8 @@ export default {
 
   methods: {
     initializeBoard() {
+      this.networkStatus = ""
+
       this.now()
       Axios.get(this.url).then( resp => {
         this.officetype = resp.data.office_type
@@ -97,8 +113,19 @@ export default {
     },
     now() {
       let d = new Date()
-      this.date = d.toLocaleDateString('en-CA', this.options)
-      this.time = d.toLocaleTimeString('en-CA', this.timeOpts)
+
+      var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      // We can't use `toLocale` on LuaKit so need to format manually
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      this.date = weekDays[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear()
+
+      var hours = (d.getHours() % 12) == 0 ? 12 : d.getHours() % 12
+      var mins = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()
+      this.time = hours + ":" + mins + " " + ((d.getHours() / 12) >= 1 ? "PM" : "AM")
+
+      // this.date = d.toLocaleDateString('en-CA', this.options)
+      // this.time = d.toLocaleTimeString('en-CA', this.timeOpts)
     },
     getParameterByName(name, url) {
       url = window.location.href;
@@ -114,7 +141,7 @@ export default {
 </script>
 
 <style>
-  .main-container { position: fixed; top: 0; left: 0; height:100%; width: 100%; margin: 0px; }
+  .main-container { position: fixed; top: 0; left: 0; height:100%; width: 100%; margin: 0px; align-items: center; }
   .top-flex-div { display: flex; height:11%; justify-content: center; align-items: center; width: 100% }
   .bottom-flex-div { display: flex; height:11%; justify-content: center; align-items: center; width: 100%; padding-top: 2%}
   .flex-title { font-size: 7.2rem; color: darkblue; text-shadow: -1px 0 steelblue, 0 1px steelblue, 1px 0 steelblue, 0 -1px steelblue }
@@ -125,7 +152,66 @@ export default {
   .flashing-ticket {color: red; font-size: 1rem }
   .board-content-div { background-color: white; box-shadow: 2px 3px 10px rgba(0, 0, 0, .5); }
   .board-table-style { width: 100%; background-color: white; text-align: center; }
-  .board-85-video { width: 82%; max-height: 60vh; padding-left: 1%; padding-right: 1%;}
+  .board-85-video { width: 82%; max-height: 60vh; padding-left: 1%; padding-right: 1%; margin: 8px auto; }
   .board-25-table { width: 25%; max-height: 60vh; padding-left: 1%; padding-right: 1%;}
   .flex-title { font-size: 4.0rem; color: midnightblue }
+
+  #network-status {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+  }
+
+  .loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    margin: -14px;
+    border: 7px solid rgba(7,54,116,.3);
+    border-radius: 50%;
+  }
+
+  .loading.small {
+    border: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .loading div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    border: 7px solid rgb(7,54,116);
+    border-radius: 50%;
+    border-color: rgb(7,54,116) transparent transparent transparent;
+    width: 64px;
+    height: 64px;
+    margin: -7px;
+    
+    -webkit-animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+
+  .loading.small div {
+    width: 32px;
+    height: 32px;
+  }
+
+  .loading div:nth-child(1) {
+      -webkit-animation-delay: -0.23s;
+  }
+  .loading div:nth-child(2) {
+      -webkit-animation-delay: -0.2s;
+  }
+  .loading div:nth-child(3) {
+      -webkit-animation-delay: -0.15s;
+  }
+  .loading div:nth-child(4) {
+      -webkit-animation-delay: -0.08s;
+  }
+
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+
 </style>
