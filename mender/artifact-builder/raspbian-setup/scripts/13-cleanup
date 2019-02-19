@@ -2,6 +2,9 @@
 
 cd $files
 
+# TODO: Enable me!
+exit 0
+
 set -ex
 
 apt-get -y --purge autoremove

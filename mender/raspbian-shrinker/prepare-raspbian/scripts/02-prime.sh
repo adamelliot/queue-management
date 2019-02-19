@@ -28,7 +28,6 @@ fim
 fuse
 xloadimage
 jq
-luakit
 Packages
 
 set -ex
@@ -37,6 +36,7 @@ apt-get update
 apt-get upgrade -y
 
 apt-get install -y --no-install-recommends $(echo $PACKAGES | tr '\n' ' ')
+apt-get install -y luakit
 
 apt-get -y --purge autoremove
 apt-get clean

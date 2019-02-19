@@ -25,6 +25,6 @@ ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
 ssh-keygen -A
 
 mkdir -p /data/videos
-ln -s /data/videos /var/flaskapp/static/videos
+ln -sf /data/videos /var/flaskapp/web-service/static/videos
 
 mount / -o remount,ro
