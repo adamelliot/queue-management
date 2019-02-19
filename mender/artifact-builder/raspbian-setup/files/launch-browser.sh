@@ -1,7 +1,7 @@
 #!/bin/bash
 
 xsetroot -solid white 
-xsetbg -onroot -background white -center /var/flaskapp/web-service/static/splash.png
+xsetbg -onroot -shrink -fullscreen -background white /var/flaskapp/web-service/static/splash.png
 
 # disable DPMS (Energy Star) features.
 xset -dpms

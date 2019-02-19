@@ -1,5 +1,6 @@
 server {
-    server_name localhost mended.local;
+    # TODO: Block external access
+    server_name _;
     listen 80;
     root /var/flaskapp/web-service/static;
 
@@ -11,5 +12,4 @@ server {
         include proxy_params;
         proxy_pass http://unix:/var/flaskapp/web-service/web-service.sock;
     }
-
 }

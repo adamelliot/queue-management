@@ -6,78 +6,53 @@
 
     <title>Queue Management</title>
 
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <style>
         html {
             background: url(splash.png) no-repeat center center fixed; 
-            -webkit-background-size: cover;
-            background-size: cover;
+            -webkit-background-size: contain;
+            background-size: contain;
         }
-
-        body {
-            text-align: center;
-        }
-
-        #loading {
-            position: absolute;
-            bottom: 50px;
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            margin: -14px;
-            border: 7px solid rgba(8,75,136,.3);
-            border-radius: 50%;
-        }
-
-        #loading div {
-            box-sizing: border-box;
-            display: block;
-            position: absolute;
-            border: 7px solid rgb(8,75,136);
-            border-radius: 50%;
-            border-color: rgb(8,75,136) transparent transparent transparent;
-            width: 64px;
-            height: 64px;
-            margin: -7px;
-            
-            -webkit-animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        }
-
-        #loading div:nth-child(1) {
-            -webkit-animation-delay: -0.23s;
-        }
-        #loading div:nth-child(2) {
-            -webkit-animation-delay: -0.2s;
-        }
-        #loading div:nth-child(3) {
-            -webkit-animation-delay: -0.15s;
-        }
-        #loading div:nth-child(4) {
-            -webkit-animation-delay: -0.08s;
-        }
-
-        @-webkit-keyframes spin {
-          0% { -webkit-transform: rotate(0deg); }
-          100% { -webkit-transform: rotate(360deg); }
-        }        
-
     </style>
-    
-    <script src="/axios.min.js"></script>
+
+    <script src="axios.min.js"></script>
     <script>
         window.onload = function() {
+            var fallbackVideoTimer;
+
             var fetchNetworkStatus = function () {
                 axios
-                .get('http://localhost/health')
+                .get('http://mended.local/health')
                 .then(function(response) {
-                    if (response.data.connected)
+                    var data = response.data;
+
+                    if (data.videoCached)
                     {
-                        document.getElementById('loading').remove();
-                        location.href = response.data.url;
+                        if (data.connected)
+                        {
+                            document.getElementById('loading').remove();
+                            location.href = response.data.url;
+                        }
+                        else
+                        {
+                            setTimeout(fetchNetworkStatus, 1000);
+                        }
+
+                        document.getElementById('loading').className = "";
+
+                        if (fallbackVideoTimer == undefined)
+                        {
+                            setTimeout(function() {
+                                location.href = "/video.html";
+                            }, data.fallbackVideoTimeout * 1000);
+                        }
                     }
                     else
                     {
-                        setTimeout(fetchNetworkStatus, 1000);
+                        clearTimeout(fallbackVideoTimer);
+                        document.getElementById('loading').className = "content";
                     }
+
                 })
                 .catch(function(error) {
                     setTimeout(fetchNetworkStatus, 1000);

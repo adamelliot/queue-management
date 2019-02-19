@@ -7,12 +7,14 @@ SMARTBOARD_ID=`cat /var/smartboard/id`
 TIMEOUT=${video_cache_timeout}
 
 mkdir -p /data/videos
-ln -sf /data/videos /var/flaskapp/web-service/static/videos
+ln -nsf /data/videos /var/flaskapp/web-service/static/videos
 
 while true ; do
 	wget -q -O /tmp/manifest.json "`cat /var/smartboard/manifest-url`"
 	if [ $? -gt 0 ] ; then
 		echo "Network down, video caching skipped"
+
+		sleep 5
 	else
 		# We have the manifest check if there is a new video
 		cat /tmp/manifest.json | jq -r "if has(\"${SMARTBOARD_ID}\") then .[\"${SMARTBOARD_ID}\"] else .[\"default\"] end" > /tmp/manifest.local.json
@@ -29,7 +31,7 @@ while true ; do
 			mv /data/videos/video.mp4.tmp /data/videos/video.mp4
 			echo $UPDATED > /data/videos/updated
 		fi
-	fi
 
-	sleep $TIMEOUT
+		sleep $TIMEOUT
+	fi
 done

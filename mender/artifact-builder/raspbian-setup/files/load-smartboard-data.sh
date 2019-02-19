@@ -28,3 +28,4 @@ echo $TZPI > /var/smartboard/timezone
 echo "${smartboard_base_url}" > /var/smartboard/base-url
 echo "${smartboard_base_url}/smartboard/${SMARTBOARD_ID}?tz=${TZPI}&localvideo=1" > /var/smartboard/url
 echo "${smartboard_base_url}/static/videos/manifest.json" > /var/smartboard/manifest-url
+echo "${fallback_video_timeout}" > /var/smartboard/fallback-video-timeout
