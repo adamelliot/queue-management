@@ -39,15 +39,15 @@ To generate the **Menderized** image you will need to provide some information t
 
 ```
 ./docker-mender-convert from-raw-disk-image \
- 	--raw-disk-image "input/raspbian-lite-shrunk.img" \
+    --raw-disk-image "input/raspbian-lite-shrunk.img" \
     --artifact-name "digital-signage" \
- 	--device-type "raspberrypi3" \
- 	--mender-client "/mender" \
- 	--bootloader-toolchain "arm-linux-gnueabihf" \
- 	--server-cert "/mender-convert/input/server.crt" \
- 	--server-url "https://mender.pathfinder.gov.bc.ca" \
- 	--storage-total-size-mb "3000" \
- 	--data-part-size-mb "1000"
+    --device-type "raspberrypi3" \
+    --mender-client "/mender" \
+    --bootloader-toolchain "arm-linux-gnueabihf" \
+    --server-cert "/mender-convert/input/server.crt" \
+    --server-url "https://mender.pathfinder.gov.bc.ca" \
+    --storage-total-size-mb "3000" \
+    --data-part-size-mb "1000"
 ```
 
 Building for Demo server:
@@ -55,13 +55,13 @@ Building for Demo server:
 ./docker-mender-convert from-raw-disk-image \
     --raw-disk-image "input/raspbian-lite-shrunk.img" \
     --artifact-name "digital-signage" \
- 	--device-type "raspberrypi3" \
- 	--mender-client "/mender" \
- 	--bootloader-toolchain "arm-linux-gnueabihf" \
- 	--demo-host-ip 10.0.0.5 \
- 	--demo \
- 	--storage-total-size-mb "3000" \
- 	--data-part-size-mb "1000"
+    --device-type "raspberrypi3" \
+    --mender-client "/mender" \
+    --bootloader-toolchain "arm-linux-gnueabihf" \
+    --demo-host-ip 10.0.0.5 \
+    --demo \
+    --storage-total-size-mb "3000" \
+    --data-part-size-mb "1000"
 ```
 
 ## Step 2b: Flashing Base Images

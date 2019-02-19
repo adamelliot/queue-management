@@ -14,3 +14,5 @@ apt-get install -y --no-install-recommends $(cat deps_add.txt | tr '\n' ' ')
 # Copy our smartboard data generator
 envsubst '${smartboard_base_url} ${fallback_video_timeout}' < load-smartboard-data.sh > /root/load-smartboard-data.sh
 chmod +x /root/load-smartboard-data.sh
+
+echo "$smartboard_base_url" > /root/smartboard-base-url
