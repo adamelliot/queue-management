@@ -32,7 +32,7 @@ To generate the **Menderized** image you will need to provide some information t
 
 1. Base Image (Built in **Step #1**)
 2. URL Which will be Hosting Mender [https://mender.pathfinder.gov.bc.ca]
-3. The service certificate the devices need to register with (use `server.crt` in this folder)
+3. The service certificate the devices need to register with (use `server.crt` in this folder and store it in the `input` folder, which will be mounted in the docker image)
 4. The total store needs to be more than double the size of the source image
 
 **WARNING:** With the input image you need to have it in the same folder as the convert tool, or a subfolder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
@@ -44,7 +44,7 @@ To generate the **Menderized** image you will need to provide some information t
  	--device-type "raspberrypi3" \
  	--mender-client "/mender" \
  	--bootloader-toolchain "arm-linux-gnueabihf" \
- 	--server-cert "server.crt" \
+ 	--server-cert "/mender-convert/input/server.crt" \
  	--server-url "https://mender.pathfinder.gov.bc.ca" \
  	--storage-total-size-mb "3000" \
  	--data-part-size-mb "1000"
