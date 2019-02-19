@@ -2,6 +2,9 @@
 
 set -ex
 
+# We need to back up init_resize as it's used by Mender
+cp /usr/lib/raspi-config/init_resize.sh /root/
+
 apt-get remove -y build-essential samba-common libasound2 libasound2-data \
 	alsa-utils binutils manpages manpages-dev man-db cpp gcc-6 firmware-atheros \
 	firmware-libertas firmware-misc-nonfree firmware-realtek gdb plymouth libplymouth4 \
@@ -31,6 +34,10 @@ systemctl disable dphys-swapfile
 if [ -f /var/swap ] ; then
 	rm /var/swap
 fi
+
+# Restore init_resize
+mkdir -p /usr/lib/raspi-config/
+cp /root/init_resize.sh /usr/lib/raspi-config/
 
 # Clean out apt lists we don't need
 rm /var/lib/apt/lists/* -vf 
