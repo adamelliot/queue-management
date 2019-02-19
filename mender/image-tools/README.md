@@ -46,7 +46,7 @@ To generate the **Menderized** image you will need to provide some information t
     --bootloader-toolchain "arm-linux-gnueabihf" \
     --server-cert "/mender-convert/input/server.crt" \
     --server-url "https://mender.pathfinder.gov.bc.ca" \
-    --storage-total-size-mb "3000" \
+    --storage-total-size-mb "3500" \
     --data-part-size-mb "1000"
 ```
 
@@ -60,7 +60,7 @@ Building for Demo server:
     --bootloader-toolchain "arm-linux-gnueabihf" \
     --demo-host-ip 10.0.0.5 \
     --demo \
-    --storage-total-size-mb "3000" \
+    --storage-total-size-mb "3500" \
     --data-part-size-mb "1000"
 ```
 
