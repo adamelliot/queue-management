@@ -64,12 +64,20 @@ Building for Demo server:
  	--data-part-size-mb "1000"
 ```
 
+## Step 2b: Flashing Base Images
+
+Mender convert will produce 3 image files. Only two we are really concerned with.  The first named `mender-raspberrypi3-digital-signage.sdimg` (`.sdimg` is the part we're interested in) is the file you will flash to an SD card. You can do this with `dd` or your favorite flashing tool.
+
+```
+dd if=mender-raspberrypi3-digital-signage.sdimg /dev/your-sd-card-device bs=1m
+```
+
 ## Step 3: Creating Artifacts
 
-One you've prepared a Menderized Image you can reuse that image for creating artifacts. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
+The other image you will be interested in is the `mender-raspberrypi3-digital-signage.ext4`, it is the file that you will use to build artifacts on top of. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
 
 Creating an artifact takes 3 parameters:
-1. Menderized Image (the `menderized-image.ext4`)
+1. Menderized Image (the `mender-raspberrypi3-digital-signage.ext4`)
 2. Name of output artifact ('digital-signage-v1')
 3. Config.env file that contains all the configuration options. See `config.example.env` to see what this files should contain
 
@@ -80,7 +88,9 @@ artifact-builder/docker-build
 
 # Build the artifact from the base image
 artifact-builder/build-artifact \
-    /Users/adam/Dropbox/Code/bcgov/mender-convert-output/digital-signage-base-image.ext4 \
-    digital-signage-beta-9 \
-    config.example.env
+    mender-convert-output/mender-raspberrypi3-digital-signage.ext4 \
+    digital-signage-v1 \
+    config.env
 ```
+
+Now you've created a new `digital-signage-v1.mender` and you and upload this in the Mender web administration at: [https://mender.pathfinder.gov.bc.ca/]
