@@ -41,7 +41,7 @@ apt-get install -y luakit
 apt-get -y --purge autoremove
 apt-get clean
 
-rm /var/lib/apt/lists/* -vf 
+rm -rf /var/lib/apt/lists/*
 
 shopt -s extglob
 
