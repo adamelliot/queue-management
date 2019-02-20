@@ -17,7 +17,7 @@ if [ ! -e /var.overlay ] ; then
 	mkdir /var
 fi
 
-if [ ! -e /var.overlay ] ; then
+if [ ! -e /home.overlay ] ; then
 	mkdir /home.overlay
 	mv /home /home.base
 	mkdir /home
