@@ -6,13 +6,6 @@ mount / -o remount,rw
 IFACE=e*
 read LOCALMAC </sys/class/net/$IFACE/address
 
-# resolv.conf needs to be writable, so we link the one in /var
-if [ -e /etc/resolv.conf ] ; then
-	rm /etc/resolv.conf
-fi
-touch /var/resolv.conf
-ln -nsf /var/resolv.conf /etc/resolv.conf
-
 # Move the sites.txt to data so it can be modified if needed
 # just by mounting that drive
 cp /root/sites.txt /uboot/sites.txt

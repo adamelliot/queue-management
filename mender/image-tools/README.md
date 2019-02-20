@@ -54,7 +54,7 @@ Building for Demo server:
 ```
 ./docker-mender-convert from-raw-disk-image \
     --raw-disk-image "input/raspbian-lite-shrunk.img" \
-    --artifact-name "digital-signage" \
+    --artifact-name "digital-signage-base-rc-1" \
     --device-type "raspberrypi3" \
     --mender-client "/mender" \
     --bootloader-toolchain "arm-linux-gnueabihf" \

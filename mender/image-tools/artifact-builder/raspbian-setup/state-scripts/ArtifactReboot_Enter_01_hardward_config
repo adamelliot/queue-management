@@ -1,7 +1,5 @@
 #! /bin/bash
 
-set -ex
-
 # NOTE: All the content of the config files must be contained in this
 # script as it will be loaded before the new FS will be available.
 
