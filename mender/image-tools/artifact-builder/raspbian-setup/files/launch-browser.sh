@@ -18,7 +18,9 @@ matchbox-window-manager -use_cursor no -use_titlebar no  &
 
 luakit -n "http://localhost/splash.html"
 
-# Sleep for a few seconds to make sure everything is up and running
+# We need to wait for the first instance to start fighting with TLS
+# before we load the second. That ensures that the HTTPS requests
+# don't fail. A newer version of luakit will fix this.
 sleep 15
 
 # Start up browser, and keep it alive if it crashes / terminates for some reason.
