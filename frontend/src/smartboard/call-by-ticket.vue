@@ -36,7 +36,6 @@ limitations under the License.*/
               {{data.value}}
               {{data.item._rowVariant=''}}
             </div>
-            <div v-if="networkStatus.networkDown" class="loading small"><div></div><div></div><div></div><div></div><div></div></div>
           </template>
           <template slot="overflow" slot-scope="data">
             {{ this.showOverflow === false ?
@@ -52,6 +51,7 @@ limitations under the License.*/
             </div>
           </template>
         </b-table>
+        <div v-if="networkStatus.networkDown" class="loading small"><div></div><div></div><div></div><div></div><div></div></div>
       </div>
     </div>
   </div>

@@ -79,6 +79,7 @@ export default {
 
     return {
       officetype: '',
+      networkDown: false,
       options: {
         weekday:'long',
         year:'numeric',
@@ -141,34 +142,34 @@ export default {
 </script>
 
 <style>
-  .main-container { position: fixed; top: 0; left: 0; height:100%; width: 100%; margin: 0px; align-items: center; }
-  .top-flex-div { display: flex; height:11%; justify-content: center; align-items: center; width: 100% }
-  .bottom-flex-div { display: flex; height:11%; justify-content: center; align-items: center; width: 100%; padding-top: 2%}
+  .main-container { position: fixed; top: 0; left: 0; height:100%; width: 100%; margin: 0px; text-align: center; }
+  .top-flex-div { height:11%; text-align: center; width: 100% }
+  .bottom-flex-div { position: absolute; bottom: 10px; left: 0; text-align: center; height:11%; width: 100%;}
   .flex-title { font-size: 7.2rem; color: darkblue; text-shadow: -1px 0 steelblue, 0 1px steelblue, 1px 0 steelblue, 0 -1px steelblue }
   .lg-boardtable-head { font-size: 2.3rem; text-align: center; height: 30px }
   .sm-boardtable-body { font-size: 1.8rem; text-align: center }
   .sm-boardtable-head { font-size: 1.8rem; text-align: center }
   .lg-boardtable-body { font-size: 2.5rem; text-align: left }
   .flashing-ticket {color: red; font-size: 1rem }
-  .board-content-div { background-color: white; box-shadow: 2px 3px 10px rgba(0, 0, 0, .5); }
+  .board-content-div { background-color: white; box-shadow: 2px 3px 10px rgba(0, 0, 0, .5); text-align: center; }
   .board-table-style { width: 100%; background-color: white; text-align: center; }
-  .board-85-video { width: 82%; max-height: 60vh; padding-left: 1%; padding-right: 1%; margin: 8px auto; }
-  .board-25-table { width: 25%; max-height: 60vh; padding-left: 1%; padding-right: 1%;}
-  .flex-title { font-size: 4.0rem; color: midnightblue }
+  .board-85-video { display: inline-block; width: 74%; padding-left: 1%; padding-right: 1%; margin: 8px auto 0 auto; }
+  .board-25-table { display: inline-block; width: 24%; max-height: 60vh; padding-left: 1%; padding-right: 1%; vertical-align: top; }
+  .flex-title { font-size: 4.0rem; color: midnightblue; margin-top: -4px; }
 
   #network-status {
     position: absolute;
-    right: 30px;
-    bottom: 30px;
+    right: 8px;
+    bottom: 8px;
   }
 
   .loading {
     display: inline-block;
     width: 50px;
     height: 50px;
-    margin: -14px;
     border: 7px solid rgba(7,54,116,.3);
     border-radius: 50%;
+    margin: 14px;
   }
 
   .loading.small {
@@ -186,7 +187,6 @@ export default {
     border-color: rgb(7,54,116) transparent transparent transparent;
     width: 64px;
     height: 64px;
-    margin: -7px;
     
     -webkit-animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
