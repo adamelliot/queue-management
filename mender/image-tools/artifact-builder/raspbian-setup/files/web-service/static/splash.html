@@ -30,7 +30,11 @@
                     {
                         if (data.connected)
                         {
-                            document.getElementById('loading').remove();
+                            // Generally hiding the loader might be better, but
+                            // the chaos of getting luakit to work with certs requires
+                            // several boots and longer boot times, so leaving the loader
+                            // creates better feedback.
+                            // document.getElementById('loading').remove();
                             location.href = response.data.url;
                         }
                         else
@@ -42,15 +46,15 @@
 
                         if (fallbackVideoTimer == undefined)
                         {
-                            setTimeout(function() {
+                            fallbackVideoTimer = setTimeout(function() {
                                 location.href = "/video.html";
                             }, data.fallbackVideoTimeout * 1000);
                         }
                     }
                     else
                     {
-                        clearTimeout(fallbackVideoTimer);
                         document.getElementById('loading').className = "content";
+                        clearTimeout(fallbackVideoTimer);
                     }
 
                 })

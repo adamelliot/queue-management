@@ -73,7 +73,8 @@ function window.build()
     w.win.child = w.ebox
 
     -- Pack tablist
-    w.layout:pack(w.tablist.widget)
+    -- NOTE: Hide the tab bar
+    -- w.layout:pack(w.tablist.widget)
 
     -- Pack notebook
     w.layout:pack(w.tabs, { expand = true, fill = true })

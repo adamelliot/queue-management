@@ -1,7 +1,9 @@
 #!/bin/bash
 
+sudo systemctl stop splashscreen
+
 xsetroot -solid white 
-xsetbg -onroot -shrink -fullscreen -background white /var/flaskapp/web-service/static/splash.png
+xsetbg -onroot -shrink -fullscreen -smooth -background white /var/flaskapp/web-service/static/splash.png
 
 # disable DPMS (Energy Star) features.
 xset -dpms
@@ -14,8 +16,10 @@ unclutter &
 # run window manager
 matchbox-window-manager -use_cursor no -use_titlebar no  &
 
+luakit -n "http://localhost/splash.html"
+
 # Sleep for a few seconds to make sure everything is up and running
-sleep 3
+sleep 15
 
 # Start up browser, and keep it alive if it crashes / terminates for some reason.
 while true ; do
