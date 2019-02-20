@@ -1,6 +1,5 @@
 server {
-    # TODO: Block external access
-    server_name _;
+    server_name localhost;
     listen 80;
     root /var/flaskapp/web-service/static;
 
