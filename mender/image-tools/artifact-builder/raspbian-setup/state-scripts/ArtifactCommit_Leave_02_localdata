@@ -25,7 +25,4 @@ ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
 # We need to start ssh once before we go RO, otherwise it has problems
 ssh-keygen -A
 
-mkdir -p /data/videos
-ln -snf /data/videos /var/flaskapp/web-service/static/videos
-
 mount / -o remount,ro

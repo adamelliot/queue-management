@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 set -e
 
-DOCKER_IMAGE_NAME=bcgov/digital-signage-artifact-builder
+DOCKER_IMAGE_NAME=bcgov/smartboard-artifact-builder
 OUTPUT_DIR="$DIR/output"
 
 show_usage() {

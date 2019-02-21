@@ -13,11 +13,12 @@ IFACE=e*
 read LOCALMAC </sys/class/net/$IFACE/address
 
 # Set address correctly based on MAC Address
-while read mac tzpi smartboard_id remainder
+while read mac tzpi smartboard_id location remainder
 do
     if [[ $LOCALMAC == $mac ]]; then
 	        TZPI=$tzpi;
             SMARTBOARD_ID=$smartboard_id;
+            LOCATION=$location
     fi
 done < /uboot/sites.txt
 
@@ -29,6 +30,7 @@ smartboard_base_url=`cat /uboot/smartboard-base-url.txt | tr -d '\n'`
 # application knows what to load
 echo $SMARTBOARD_ID > /var/smartboard/id
 echo $TZPI > /var/smartboard/timezone
+echo $LOCATION > /var/smartboard/location
 echo "${smartboard_base_url}/smartboard/${SMARTBOARD_ID}?tz=${TZPI}&localvideo=1" > /var/smartboard/url
 echo "${smartboard_base_url}/static/videos/manifest.json" > /var/smartboard/manifest-url
 echo "${fallback_video_timeout}" > /var/smartboard/fallback-video-timeout

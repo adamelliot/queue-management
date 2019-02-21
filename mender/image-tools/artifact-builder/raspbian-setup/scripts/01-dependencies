@@ -16,3 +16,5 @@ envsubst '${fallback_video_timeout}' < load-smartboard-data.sh > /root/load-smar
 chmod +x /root/load-smartboard-data.sh
 
 echo "$smartboard_base_url" > /root/smartboard-base-url
+
+cp mender-inventory-smartboard /usr/share/mender/inventory
