@@ -40,13 +40,12 @@ To generate the **Menderized** image you will need to provide some information t
 ```
 ./docker-mender-convert from-raw-disk-image \
     --raw-disk-image "input/raspbian-lite-shrunk.img" \
-    --artifact-name "digital-signage" \
+    --artifact-name "smartboard-base" \
     --device-type "raspberrypi3" \
     --mender-client "/mender" \
     --bootloader-toolchain "arm-linux-gnueabihf" \
-    --server-cert "/mender-convert/input/server.crt" \
-    --server-url "https://mender.pathfinder.gov.bc.ca" \
-    --storage-total-size-mb "3500" \
+    --server-url "https://menderdev.pathfinder.gov.bc.ca" \
+    --storage-total-size-mb "4000" \
     --data-part-size-mb "1000"
 ```
 
@@ -54,43 +53,44 @@ Building for Demo server:
 ```
 ./docker-mender-convert from-raw-disk-image \
     --raw-disk-image "input/raspbian-lite-shrunk.img" \
-    --artifact-name "digital-signage-base-rc-1" \
+    --artifact-name "smartboard-base" \
     --device-type "raspberrypi3" \
     --mender-client "/mender" \
     --bootloader-toolchain "arm-linux-gnueabihf" \
     --demo-host-ip 10.0.0.5 \
     --demo \
-    --storage-total-size-mb "3500" \
+    --storage-total-size-mb "4000" \
     --data-part-size-mb "1000"
 ```
 
 ## Step 2b: Flashing Base Images
 
-Mender convert will produce 3 image files. Only two we are really concerned with.  The first named `mender-raspberrypi3-digital-signage.sdimg` (`.sdimg` is the part we're interested in) is the file you will flash to an SD card. You can do this with `dd` or your favorite flashing tool.
+Mender convert will produce 3 image files. Only two we are really concerned with.  The first named `mender-raspberrypi3-smartboard-base.sdimg` (`.sdimg` is the part we're interested in) is the file you will flash to an SD card. You can do this with `dd` or your favorite flashing tool.
 
 ```
-dd if=mender-raspberrypi3-digital-signage.sdimg /dev/your-sd-card-device bs=1m
+dd if=mender-raspberrypi3-smartboard-base.sdimg /dev/your-sd-card-device bs=1m
 ```
 
 ## Step 3: Creating Artifacts
 
-The other image you will be interested in is the `mender-raspberrypi3-digital-signage.ext4`, it is the file that you will use to build artifacts on top of. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
+The other image you will be interested in is the `mender-raspberrypi3-smartboard-base.ext4`, it is the file that you will use to build artifacts on top of. The Menderized image is what is paired with your Mender Host, and creating the image is only required when you need to change the base image or change hosts.
 
 Creating an artifact takes 3 parameters:
-1. Menderized Image (the `mender-raspberrypi3-digital-signage.ext4`)
-2. Name of output artifact ('digital-signage-v1')
+1. Menderized Image (the `mender-raspberrypi3-smartboard-base.ext4`)
+2. Name of output artifact ('smartboard-base-v1')
 3. Config.env file that contains all the configuration options. See `config.example.env` to see what this files should contain
 
 Then you can run:
+
 ```
 # Run this the first time to make sure the container is built
 artifact-builder/docker-build
 
 # Build the artifact from the base image
 artifact-builder/build-artifact \
-    mender-convert-output/mender-raspberrypi3-digital-signage.ext4 \
-    digital-signage-v1 \
+    mender-convert-output/mender-raspberrypi3-smartboard-base.ext4 \
+    smartboard-base-v1 \
     config.env
 ```
 
-Now you've created a new `digital-signage-v1.mender` and you and upload this in the Mender web administration at: [https://mender.pathfinder.gov.bc.ca/]
+Now you've created a new `smartboard-base-v1.mender` and you and upload this in the Mender web administration at: [https://mender.pathfinder.gov.bc.ca/]

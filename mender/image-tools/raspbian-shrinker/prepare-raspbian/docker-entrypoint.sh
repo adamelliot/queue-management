@@ -34,7 +34,7 @@ fi
 
 cp -R /scripts /root_system/root/
 
-chroot /root_system /bin/bash -c "cd /root/scripts ; ./01-prune.sh ; ./02-prime.sh"
+chroot /root_system /bin/bash -c "cd /root/scripts ; ./01-prune.sh ; ./02-prime.sh ; ./03-cleanup.sh"
 
 if [ "$QEMU_STATIC_COPIED" = true ]; then
   rm /root_system/usr/bin/qemu-arm-static

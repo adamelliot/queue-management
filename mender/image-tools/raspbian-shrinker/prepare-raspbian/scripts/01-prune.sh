@@ -18,13 +18,6 @@ rm -rf /usr/share/man
 
 shopt -s extglob
 
-# Remove non-english locales
-rm -rf /usr/share/locale/!(en|en*|locale.alias)
-rm -rf /usr/share/i18n/locales/!(en|en*|translit)
-
-# Remove unsued documentation:
-rm -rf /usr/share/doc
-
 # Disable swap space
 dphys-swapfile swapoff
 dphys-swapfile uninstall 
@@ -38,6 +31,3 @@ fi
 # Restore init_resize
 mkdir -p /usr/lib/raspi-config/
 cp /root/init_resize.sh /usr/lib/raspi-config/
-
-# Clean out apt lists we don't need
-rm /var/lib/apt/lists/* -vf 
