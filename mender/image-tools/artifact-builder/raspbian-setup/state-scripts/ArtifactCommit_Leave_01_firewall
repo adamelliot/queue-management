@@ -9,4 +9,4 @@ ufw allow `cat /var/sshd_port`
 ufw allow ntp 
 ufw --force enable
 
-mount / -o remount,ro
+# mount / -o remount,ro

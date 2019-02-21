@@ -25,4 +25,4 @@ ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
 # We need to start ssh once before we go RO, otherwise it has problems
 ssh-keygen -A
 
-mount / -o remount,ro
+# mount / -o remount,ro
