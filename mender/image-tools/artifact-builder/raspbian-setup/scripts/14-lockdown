@@ -24,8 +24,8 @@ fi
 # 	mkdir /home
 # fi
 
-# mkdir -p /tmp
+mkdir -p /tmp
 
-# mkdir -p /usr/local/bin
-# cp mount_overlay /usr/local/bin
-# cp fstab /etc/fstab
+mkdir -p /usr/local/bin
+cp mount_overlay /usr/local/bin
+cp fstab /etc/fstab
