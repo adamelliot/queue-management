@@ -16,9 +16,25 @@ To shrink and prime the image run:
 raspbian-shrinker/generate-image.sh 2018-11-13-raspbian-stretch-lite.img
 ```
 
-## Step 2: Menderizing the image
+### Expected Output
+```
+...
+Updating inode references     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+The filesystem on /dev/loop0 is now 193053 (4k) blocks long.
+
+sh: 1: udevadm: not found
+sh: 1: udevadm: not found
+sh: 1: udevadm: not found
+sh: 1: udevadm: not found
+Shrunk /output/2018-11-13-raspbian-stretch-lite.img from 1.8G to 803M
+```
+
+## Step 2: Menderizing the Image
 
 The next step of the process involves turning the standard Raspbian image into **Menderized** image which can do OTA updates. To do this we will use the `mender-convert` utility.
+
+### IMPORTANT:
+This step needs to be run on a case sensitive filesystem, it's a known issue with `mender-convert` and they will hopefully have it dealt with soon. At the time of writing this would only work on actual Linux disks (IE in a VM or on actual hardware, doesn't work through Dockerization). More information on: (Mender Hub)[https://hub.mender.io/t/raspberry-pi-3-model-b-b-raspbian/140/10]
 
 ```
 git clone https://github.com/mendersoftware/mender-convert.git
@@ -35,17 +51,18 @@ To generate the **Menderized** image you will need to provide some information t
 3. The service certificate the devices need to register with (use `server.crt` in this folder and store it in the `input` folder, which will be mounted in the docker image)
 4. The total store needs to be more than double the size of the source image
 
-**WARNING:** With the input image you need to have it in the same folder as the convert tool, or a subfolder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
+### WARNING:
+With the input image you need to have it in the same folder as the convert tool, or a subfolder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
 
 ```
 ./docker-mender-convert from-raw-disk-image \
-    --raw-disk-image "input/raspbian-lite-shrunk.img" \
+    --raw-disk-image "input/2018-11-13-raspbian-stretch-lite.img" \
     --artifact-name "smartboard-base" \
     --device-type "raspberrypi3" \
     --mender-client "/mender" \
     --bootloader-toolchain "arm-linux-gnueabihf" \
     --server-url "https://menderdev.pathfinder.gov.bc.ca" \
-    --storage-total-size-mb "4000" \
+    --storage-total-size-mb "5000" \
     --data-part-size-mb "1000"
 ```
 
@@ -59,7 +76,7 @@ Building for Demo server:
     --bootloader-toolchain "arm-linux-gnueabihf" \
     --demo-host-ip 10.0.0.5 \
     --demo \
-    --storage-total-size-mb "4000" \
+    --storage-total-size-mb "5000" \
     --data-part-size-mb "1000"
 ```
 

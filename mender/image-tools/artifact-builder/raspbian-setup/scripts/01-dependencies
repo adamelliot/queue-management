@@ -4,6 +4,8 @@ cd $files
 set -ex
 
 apt-get update
+
+# NOTE: Comment this line if the build is breaking with new updates
 apt-get upgrade -y
 
 # remove deps
