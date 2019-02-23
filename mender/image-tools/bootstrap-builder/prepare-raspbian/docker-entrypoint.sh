@@ -33,11 +33,15 @@ else
 fi
 
 cp -R /scripts /root_system/root/
+chroot /root_system /bin/bash -c "cd /root/scripts ; ./01-prune.sh "
+rm -rf /root_system/root/scripts
 
-chroot /root_system /bin/bash -c "cd /root/scripts ; ./01-prune.sh ; ./02-prime.sh ; ./03-cleanup.sh"
+if [ -e /setup-scripts/setup.sh ] ; then
+  cp -R /setup-scripts /root_system/root/
+  chroot /root_system /bin/bash -c "/root/setup-scripts/setup.sh"
+  rm -rf /root_system/root/setup-scripts
+fi
 
 if [ "$QEMU_STATIC_COPIED" = true ]; then
   rm /root_system/usr/bin/qemu-arm-static
 fi
-
-rm -rf /root_system/root/scripts

@@ -11,14 +11,14 @@ if [ -f /var/swap ] ; then
 	rm /var/swap
 fi
 
-if [ ! -e /var.overlay ] ; then
-	mkdir /var.overlay
+if [ ! -e /var.base ] ; then
+	mkdir -p /var.overlay
 	mv /var /var.base
 	mkdir /var
 fi
 
-if [ ! -e /home.overlay ] ; then
-	mkdir /home.overlay
+if [ ! -e /home.base ] ; then
+	mkdir -p /home.overlay
 	mv /home /home.base
 	mkdir /home
 fi

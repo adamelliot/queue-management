@@ -24,6 +24,7 @@ done < /uboot/sites.txt
 
 ln -snf "/usr/share/zoneinfo/${TZPI}" /var/localtime
 
+# TODO: Verify this isn't creating a problem (check the logs)
 cp /uboot/smartboard-base-url.txt /var/smartboard/base-url
 
 smartboard_base_url=`cat /uboot/smartboard-base-url.txt | tr -d '\n'`

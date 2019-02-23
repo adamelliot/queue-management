@@ -16,18 +16,6 @@ apt-get clean
 rm -rf /var/cache/man
 rm -rf /usr/share/man
 
-shopt -s extglob
-
-# Disable swap space
-dphys-swapfile swapoff
-dphys-swapfile uninstall 
-systemctl disable dphys-swapfile
-
-# Remove swap file
-if [ -f /var/swap ] ; then
-	rm /var/swap
-fi
-
 # Restore init_resize
 mkdir -p /usr/lib/raspi-config/
 cp /root/init_resize.sh /usr/lib/raspi-config/

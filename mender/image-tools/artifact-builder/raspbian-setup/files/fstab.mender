@@ -1,11 +1,8 @@
-# TODO: Enable RO
 /dev/root            /                    auto       defaults,ro           1  1
 proc                 /proc                proc       defaults              0  0
 devpts               /dev/pts             devpts     mode=0620,gid=5       0  0
 tmpfs                /run                 tmpfs      mode=0755,nodev,nosuid,strictatime 0  0
 
-# TODO: Remove this under RO
-tmpfs                /var/volatile        tmpfs      defaults              0  0
 tmpfs                /tmp                 tmpfs      defaults              0  0
 
 mount_overlay        /home                fuse       nofail,defaults       0  0
