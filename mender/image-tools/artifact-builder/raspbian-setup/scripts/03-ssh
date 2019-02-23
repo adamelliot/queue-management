@@ -16,3 +16,5 @@ chown $username:$username $ssh_dir $ssh_dir/authorized_keys
 systemctl enable ssh
 
 echo $sshd_port > /var/sshd_port
+
+ssh-keygen -A

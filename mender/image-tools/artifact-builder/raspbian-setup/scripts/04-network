@@ -32,10 +32,11 @@ cp network-watchdog.service  /etc/systemd/system/
 
 systemctl enable network-watchdog
 
-# TODO: Enable resolv moving
-# # resolv.conf needs to be writable, so we link the one in /var
-# if [ -e /etc/resolv.conf ] ; then
-# 	mv /etc/resolv.conf /var/resolv.conf
-# fi
-# touch /var/resolv.conf
-# ln -nsf /var/resolv.conf /etc/resolv.conf
+# resolv.conf needs to be writable, so we link the one in /var
+if [[ ! -e /var/resolv.conf && -e /etc/resolv.conf ]] ; then
+	mv /etc/resolv.conf /var/resolv.conf
+fi
+touch /var/resolv.conf
+ln -nsf /var/resolv.conf /etc/resolv.conf
+
+# TODO: Disable first run ssh-keygen

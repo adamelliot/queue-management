@@ -2,27 +2,15 @@
 
 mount / -o remount,rw
 
-# Get Ethernet mac address
-IFACE=e*
-read LOCALMAC </sys/class/net/$IFACE/address
-
 # Move the sites.txt to data so it can be modified if needed
 # just by mounting that drive
 cp /root/sites.txt /uboot/sites.txt
 cp /root/smartboard-base-url /uboot/smartboard-base-url.txt
 
-# Set address correctly based on MAC Address
-while read mac tzpi url remainder
-do
-    if [[ $LOCALMAC == $mac ]]; then
-        TZPI=$tzpi;
-    fi
-done < /uboot/sites.txt
-
-# Final timezone setting will be done after the image is deployed on a device
-ln -sf "/usr/share/zoneinfo/${TZPI}" /etc/localtime
-
 # We need to start ssh once before we go RO, otherwise it has problems
+
+rm /etc/ssh/ssh_host_*
 ssh-keygen -A
 
+# TODO: Resume RO
 # mount / -o remount,ro

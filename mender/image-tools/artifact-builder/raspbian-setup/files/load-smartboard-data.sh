@@ -22,6 +22,8 @@ do
     fi
 done < /uboot/sites.txt
 
+ln -snf "/usr/share/zoneinfo/${TZPI}" /var/localtime
+
 cp /uboot/smartboard-base-url.txt /var/smartboard/base-url
 
 smartboard_base_url=`cat /uboot/smartboard-base-url.txt | tr -d '\n'`

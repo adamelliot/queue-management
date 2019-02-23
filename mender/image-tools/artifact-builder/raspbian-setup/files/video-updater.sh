@@ -22,7 +22,7 @@ while true ; do
 		URL=`cat /tmp/manifest.local.json | jq -r '.["url"]'`
 
 		if [[ ! -e /data/videos/video.mp4 || ! -e /data/videos/updated ||
-			"$UPDATED" != `cat /data/videos/updated` ]]
+			"$UPDATED" != `cat /data/videos/updated` || "$URL" != `cat /data/videos/url` ]]
 		then
 			wget -O "/data/videos/video.mp4.tmp" "$BASE_URL$URL"
 			# Once a new video is downloaded the browser needs to be restarted
@@ -30,6 +30,7 @@ while true ; do
 
 			mv /data/videos/video.mp4.tmp /data/videos/video.mp4
 			echo $UPDATED > /data/videos/updated
+			echo $URL > /data/videos/url
 		fi
 
 		sleep $TIMEOUT

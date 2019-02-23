@@ -6,4 +6,5 @@ set -ex
 cp timesyncd.conf /etc/systemd/
 
 # Final timezone setting will be done after the image is deployed on a device
-ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime
+ln -nsf /usr/share/zoneinfo/America/Vancouver /var/localtime
+ln -nsf /var/localtime /etc/localtime

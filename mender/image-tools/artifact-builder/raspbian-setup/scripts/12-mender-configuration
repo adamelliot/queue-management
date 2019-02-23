@@ -1,0 +1,12 @@
+#! /bin/bash
+cd $files
+
+set -ex
+
+mkdir -p /usr/share/mender/identity
+cp mender-device-identity /usr/share/mender/identity
+chmod +x /usr/share/mender/identity/mender-device-identity
+
+mkdir -p /usr/share/mender/inventory
+cp mender-inventory-smartboard /usr/share/mender/inventory
+chmod +x /usr/share/mender/inventory/mender-inventory-smartboard

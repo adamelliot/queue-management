@@ -3,7 +3,7 @@
 # NOTE: All the content of the config files must be contained in this
 # script as it will be loaded before the new FS will be available.
 
-cat << END_TEXT > /boot/config.txt
+cat << END_TEXT > /uboot/config.txt
 disable_splash=1
 
 hdmi_force_hotplug=1
@@ -13,7 +13,7 @@ hdmi_force_hotplug=1
 
 gpu_mem_256=128
 gpu_mem_512=256
-gpu_mem_1024=256
+gpu_mem_1024=512
 
 # To remove the undervoltage warning:
 avoid_warnings=1 

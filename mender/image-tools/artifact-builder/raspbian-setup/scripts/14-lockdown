@@ -11,21 +11,26 @@ if [ -f /var/swap ] ; then
 	rm /var/swap
 fi
 
-# TODO: Fix issues with RO
-# if [ ! -e /var.overlay ] ; then
-# 	mkdir /var.overlay
-# 	mv /var /var.base
-# 	mkdir /var
-# fi
+if [ ! -e /var.overlay ] ; then
+	mkdir /var.overlay
+	mv /var /var.base
+	mkdir /var
+fi
 
-# if [ ! -e /home.overlay ] ; then
-# 	mkdir /home.overlay
-# 	mv /home /home.base
-# 	mkdir /home
-# fi
+if [ ! -e /home.overlay ] ; then
+	mkdir /home.overlay
+	mv /home /home.base
+	mkdir /home
+fi
 
 mkdir -p /tmp
 
 mkdir -p /usr/local/bin
 cp mount_overlay /usr/local/bin
-cp fstab /etc/fstab
+
+if [ -e /etc/mender/artifact_info ] ; then
+	cp fstab.mender /etc/fstab
+else
+	mkdir -p /data
+	cp fstab.base /etc/fstab
+fi
