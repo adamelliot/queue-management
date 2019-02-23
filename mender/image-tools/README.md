@@ -92,7 +92,9 @@ Once we've menderized our base image the files system and mender configuration w
 **NOTE:** You only need to patch the `.sdimg` the artifact will be patched automatically when it builds.
 
 ```
-
+mender-image-patcher/mender-image-patcher \
+    mender-raspberrypi3-smartboard-base-image-v1.sdimg
+    config.env
 ```
 
 
