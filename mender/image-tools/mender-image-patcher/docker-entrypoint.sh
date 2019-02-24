@@ -38,6 +38,8 @@ cp /setup-scripts/files/fstab.mender /root_system/etc/fstab
 cp /setup-scripts/files/mender-device-identity /root_system/usr/share/mender/identity
 chmod +x /root_system/usr/share/mender/identity/mender-device-identity
 
+ln -snf /data/mender /root_system/var.base/lib/mender
+
 cp /root_system/uboot/sites.txt /root/
 cp /root_system/uboot/smartboard-base-url.txt /root/
 
