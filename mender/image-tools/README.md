@@ -7,13 +7,13 @@
 
 ## Step 1: Building Base Image (Bootstrapping)
 
-The first image that needs to be built is the base raspbian image that will be "menderized". This image is a modified version of the released image from Raspbian. It has much of the unneeded packages removed, and the base level of packages for all the features in our app.
+The first image that needs to be built is the base raspbian image that will be "menderized". This image is a modified version of the released image from Raspbian. It has the majority of the application packaged into it in way that can be deployed directly, or run through "menderization" to be used in a mender deploy.
 
 First download the raspbian image from: [Raspberry Pi Images](https://www.raspberrypi.org/downloads/raspbian/). Download the [Raspbian Lite Image](https://downloads.raspberrypi.org/raspbian_lite_latest).
 
 To shrink and prime the image run:
 ```
-raspbian-shrinker/generate-image.sh 2018-11-13-raspbian-stretch-lite.img
+bootstrap-builder/generate-image.sh 2018-11-13-raspbian-stretch-lite.img
 ```
 
 ### Expected Output
@@ -26,6 +26,14 @@ sh: 1: udevadm: not found
 sh: 1: udevadm: not found
 sh: 1: udevadm: not found
 Shrunk /output/2018-11-13-raspbian-stretch-lite.img from 1.8G to 984M
+```
+
+### Building Standalone Image
+
+If you want to build an image that will run on it's own you need to just run the bootstrapping without running the shrinking too.
+
+```
+bootstrap-builder/prepare-raspbian/prepare-raspbian 2018-11-13-raspbian-stretch-lite.img config.env 
 ```
 
 ## Step 2: Menderizing the Image
@@ -51,7 +59,7 @@ To generate the **Menderized** image you will need to provide some information t
 4. The total store needs to be more than double the size of the source image
 
 ### WARNING:
-With the input image you need to have it in the same folder as the convert tool, or a subfolder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
+With the input image you need to have it in the same folder as the convert tool, or a sub-folder as it's volumed into the conversion tool via Docker and paths get mangled around. I suggest using the `input` folder, as that's the paradigm the tool has been using.
 
 ```
 ./docker-mender-convert from-raw-disk-image \
@@ -60,7 +68,7 @@ With the input image you need to have it in the same folder as the convert tool,
     --device-type "raspberrypi3" \
     --mender-client "/mender" \
     --bootloader-toolchain "arm-linux-gnueabihf" \
-    --server-url "https://menderdev.pathfinder.gov.bc.ca" \
+    --server-url "https://mender.pathfinder.gov.bc.ca" \
     --storage-total-size-mb "5000" \
     --data-part-size-mb "1000"
 ```
@@ -81,8 +89,53 @@ Building for Demo server:
 
 ### Expected Output:
 ```
-...
-
+1/9 Repartitioning raw disk image...
+    Detected raw disk image with 2 partition(s).
+    Calculating partitions' sizes of the Mender image.
+    Adjust Mender disk image size to the total storage size (5000MB).
+    Extracting boot partition from raw disk image.
+    Storing data in boot.vfat.
+    Extracting root filesystem partition from raw disk image.
+    Storing data in rootfs.img.
+    Creating blank Mender disk image:       
+        image size: 5242880000 bytes       
+        boot partition size: 46137344 bytes       
+        root filesystem size: 2067791872 bytes       
+        data partition size: 1048576000 bytes
+    Changes in partition table applied.
+2/9 Formatting repartitioned raw disk image...
+    Creating MS-DOS filesystem for 'boot' partition.
+    Creating ext4 filesystem for 'primary' partition.
+    Creating ext4 filesystem for 'secondary' partition.
+    Creating ext4 filesystem for 'data' partition.
+3/9 Setting boot partition...
+    Done.
+4/9 Setting root filesystem partition...
+    Done.
+5/9 Setting file system table...
+    Done.
+6/9 Cleaning intermediate files...
+    Partition mappings cleaned.
+7/9 Installing Mender to Mender disk image...
+    Downloading inventory & identity scripts.
+    Installing files.
+    Done.
+8/9 Installing Bootloader to Mender disk image...
+    Building U-Boot related files.
+    Installing U-Boot related files.
+    Done.
+9/9 Creating Mender Artifact...
+    Rootfs partition id not set - 'primary' will be used by default.
+    Storing data in mender-raspberrypi3-smartboard-base-image-v1.ext4.
+    Writing Mender artifact to: /mender-convert/output/mender-raspberrypi3-smartboard-base-image-v1.mender
+    Creating Mender Artifact succeeded.
+Conversion complete!
+The Mender disk image you can provision your device storage with is at:         
+    /mender-convert/output/mender-raspberrypi3-smartboard-base-image-v1.sdimg
+The Mender root file system partition is at:
+    /mender-convert/output/mender-raspberrypi3-smartboard-base-image-v1.ext4
+The Mender Artifact you can upload to your Mender server to deploy to your devices is at:         
+    /mender-convert/output/mender-raspberrypi3-smartboard-base-image-v1.mender
 ```
 
 ## Step 3: Patching Mender Images
@@ -94,10 +147,7 @@ Once we've menderized our base image the files system and mender configuration w
 ```
 mender-image-patcher/mender-image-patcher \
     mender-raspberrypi3-smartboard-base-image-v1.sdimg
-    config.env
 ```
-
-
 
 ## Step 3b: Flashing the Base
 
